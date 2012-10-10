@@ -1,0 +1,3 @@
+include *.rst
+include build_scripts/*.py
+include src/attowiki/RELEASE-VERSION
