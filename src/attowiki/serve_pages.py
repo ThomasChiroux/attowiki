@@ -17,22 +17,26 @@
 # along with this program.
 # If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>
 #
-"""file for main entry point
-"""
 
-import bottle
+import glob
+# dependencies imports
+from bottle import request, response
 
-import serve_pages
-
-def main():
-    """main entry point
-
-    launches the webserver locally
+def index():
+    """looks for index.rst file and serve it.
+    If not found, list all the available files
     """
-    app = bottle.Bottle()
-    # Mission
-    app.route('/', method='GET')(serve_pages.index)
-    app.route('/<name>', method='GET')(serve_pages.page)
+    index_files = glob.glob("./[Ii][Nn][Dd][Ee][Xx].rst")
+    if len(index_files) == 0:
+        rst_files = glob.glob("./*.rst")
+        return rst_files
+    else:
+        index = open(index_files[0], 'r')
+        return index
+    #try:
+    #    file_index = open('Index.rst')
 
-    bottle.debug(True)
-    bottle.run(app, host='localhost', port=8080)
+def page(name):
+    """serve a page name
+    """
+    print glob.glob("./{0}.rst".format(name))

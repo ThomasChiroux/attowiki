@@ -96,8 +96,8 @@ except ImportError:
 
 setup(name='attowiki',
       version=VERSION,
-      description="very small wiki generator based on reST files "
-                  "in a directory structure",
+      description="small wiki engine based on static reST files "
+                  "in a directory and git for versionning",
       long_description=README + '\n\n' + NEWS,
       cmdclass={'build_py': my_build_py},
       classifiers=[
