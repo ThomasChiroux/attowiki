@@ -29,6 +29,8 @@ def main():
 
     launches the webserver locally
     """
+    # add view path from module localisation
+    # todo: use pkg_resources ?
     views_path = os.path.abspath(__file__)
     if views_path[-1] != '/':
         views_path = views_path[:views_path.rfind('/')]
@@ -41,6 +43,8 @@ def main():
     app = bottle.Bottle()
     # Mission
     app.route('/', method='GET')(serve_pages.page)
+    app.route('/edit/')(serve_pages.edit)
+    app.route('/edit/<name>')(serve_pages.edit)
     app.route('/<name>.__iframe__', method='GET')(serve_pages.iframe)
     app.route('/<name>', method='GET')(serve_pages.page)
 

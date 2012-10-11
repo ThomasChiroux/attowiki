@@ -77,13 +77,13 @@
 <body onload = "parent.htmlpage.location='{{name}}.__iframe__'">
 <div class="header">
     <div class="text">
-        [<a href="/__index__">i</a>]:
-        <a href="/">attowiki</a>:
-        <a href="{{display_name}}">{{display_name}}</a>
+        [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:<a href="{{display_name}}">{{display_name}}</a>
     </div>
     <div class="buttons">
-        <a href="#" id="btn_new">new page</a>
-        <a href="#" id="btn_edit">edit</a>
+        <a href="/edit/" id="btn_new">new page</a>
+%if name != '__index__':
+        <a href="/edit/{{name}}" id="btn_edit">edit</a>
+%end
     </div>
 </div>
 <div style="width: 100%;position: absolute;top: 21px;left: 0px;bottom: 0;">

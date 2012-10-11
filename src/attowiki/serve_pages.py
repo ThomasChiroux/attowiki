@@ -30,6 +30,27 @@ def index():
     rst_files = [file[2:-4] for file in glob.glob("./*.rst")]
     return template('index', filelist=rst_files)
 
+def edit(name=None):
+    """edit or creates a new page
+    """
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    if name is None:
+        # new page
+        return template('edit', name=name, display_name=name,
+                        content="")
+    else:
+        files = glob.glob("{0}.rst".format(name))
+        if len(files) > 0:
+            file = open(files[0], 'r')
+            return template('edit', name=name, display_name=name,
+                            content=file.read())
+            #return template('page', page_name=files[0][2:-4],
+            #                 page_content=publish_string(file.read(),
+            #                                             writer_name='html'))
+        else:
+            return abort(404)
+
 def page(name=None):
     """serve a page name
     """
@@ -41,7 +62,7 @@ def page(name=None):
         if len(index_files) == 0:
             # not found
             # redirect to __index__
-            pass
+            name = "__index__"
         else:
             name = index_files[0][2:-4]
     return template('page', name=name, display_name=name)
@@ -55,9 +76,7 @@ def iframe(name):
         # we should generate and index page
         return index()
     else:
-        print name
         files = glob.glob("{0}.rst".format(name))
-        print files
         if len(files) > 0:
             file = open(files[0], 'r')
             return publish_string(file.read(), writer_name='html')
