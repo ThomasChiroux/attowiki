@@ -27,28 +27,42 @@ def index():
     """looks for index.rst file and serve it.
     If not found, list all the available files
     """
-    index_files = glob.glob("./[Ii][Nn][Dd][Ee][Xx].rst")
-    if len(index_files) == 0:
-        rst_files = [file[2:-4] for file in glob.glob("./*.rst")]
-        return template('index', filelist=rst_files)
-    else:
-        file = open(index_files[0], 'r')
-        return publish_string(file.read(), writer_name='html')
-        #return template('page', page_name="index",
-        #                page_content=publish_string(file.read(),
-        #                                            writer_name='html'))
+    rst_files = [file[2:-4] for file in glob.glob("./*.rst")]
+    return template('index', filelist=rst_files)
 
-
-def page(name):
+def page(name=None):
     """serve a page name
     """
-    files = glob.glob("{0}.rst".format(name))
-    print files
-    if len(files) > 0:
-        file = open(files[0], 'r')
-        return publish_string(file.read(), writer_name='html')
-        #return template('page', page_name=files[0][2:-4],
-        #                 page_content=publish_string(file.read(),
-        #                                             writer_name='html'))
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    if name is None:
+        # we try to find an index file
+        index_files = glob.glob("./[Ii][Nn][Dd][Ee][Xx].rst")
+        if len(index_files) == 0:
+            # not found
+            # redirect to __index__
+            pass
+        else:
+            name = index_files[0][2:-4]
+    return template('page', name=name, display_name=name)
+
+def iframe(name):
+    """serve the iframe : the html converted rst file
+    """
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    if name == '__index__':
+        # we should generate and index page
+        return index()
     else:
-        return abort(404)
+        print name
+        files = glob.glob("{0}.rst".format(name))
+        print files
+        if len(files) > 0:
+            file = open(files[0], 'r')
+            return publish_string(file.read(), writer_name='html')
+            #return template('page', page_name=files[0][2:-4],
+            #                 page_content=publish_string(file.read(),
+            #                                             writer_name='html'))
+        else:
+            return abort(404)

@@ -11,7 +11,7 @@
 
 <ul>
 %for file in filelist:
-        <li><a href="{{file}}">{{file}}</a></li>
+        <li><a target="_parent" href="{{file}}">{{file}}</a></li>
 %end
 </ul>
 </body>

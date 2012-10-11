@@ -40,7 +40,8 @@ def main():
 
     app = bottle.Bottle()
     # Mission
-    app.route('/', method='GET')(serve_pages.index)
+    app.route('/', method='GET')(serve_pages.page)
+    app.route('/<name>.__iframe__', method='GET')(serve_pages.iframe)
     app.route('/<name>', method='GET')(serve_pages.page)
 
     bottle.debug(True)
