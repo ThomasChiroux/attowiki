@@ -20,7 +20,8 @@
 
 import glob
 # dependencies imports
-from bottle import request, response
+from bottle import request, response, template, abort
+from docutils.core import publish_string
 
 def index():
     """looks for index.rst file and serve it.
@@ -28,15 +29,26 @@ def index():
     """
     index_files = glob.glob("./[Ii][Nn][Dd][Ee][Xx].rst")
     if len(index_files) == 0:
-        rst_files = glob.glob("./*.rst")
-        return rst_files
+        rst_files = [file[2:-4] for file in glob.glob("./*.rst")]
+        return template('index', filelist=rst_files)
     else:
-        index = open(index_files[0], 'r')
-        return index
-    #try:
-    #    file_index = open('Index.rst')
+        file = open(index_files[0], 'r')
+        return publish_string(file.read(), writer_name='html')
+        #return template('page', page_name="index",
+        #                page_content=publish_string(file.read(),
+        #                                            writer_name='html'))
+
 
 def page(name):
     """serve a page name
     """
-    print glob.glob("./{0}.rst".format(name))
+    files = glob.glob("{0}.rst".format(name))
+    print files
+    if len(files) > 0:
+        file = open(files[0], 'r')
+        return publish_string(file.read(), writer_name='html')
+        #return template('page', page_name=files[0][2:-4],
+        #                 page_content=publish_string(file.read(),
+        #                                             writer_name='html'))
+    else:
+        return abort(404)

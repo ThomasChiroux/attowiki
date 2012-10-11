@@ -19,7 +19,7 @@
 #
 """file for main entry point
 """
-
+import os
 import bottle
 
 import serve_pages
@@ -29,6 +29,15 @@ def main():
 
     launches the webserver locally
     """
+    views_path = os.path.abspath(__file__)
+    if views_path[-1] != '/':
+        views_path = views_path[:views_path.rfind('/')]
+    else:
+        views_path = views_path[:views_path[:-1].rfind('/')]
+    views_path = views_path + '/views/'
+    print views_path
+    bottle.TEMPLATE_PATH.insert(0, views_path)
+
     app = bottle.Bottle()
     # Mission
     app.route('/', method='GET')(serve_pages.index)
