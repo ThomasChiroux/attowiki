@@ -1,5 +1,8 @@
+Version History
+---------------
+
 v0.2
-----
+""""
 
 * start in a dir, looks for .rst files and serve them in html
 * looks for index.rst at first and serve it
@@ -9,6 +12,6 @@ v0.2
 
 
 v0.1
-----
+""""
 
 * first (non-working) version

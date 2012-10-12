@@ -30,8 +30,15 @@ all the .rst files inside the current directory will be used for the wiki
 installation
 ------------
 
+::
+
+    pip install attowiki
+
+
 project dependencies
 """"""""""""""""""""
 
 * bottle
 * docutils
+* gitpython
+

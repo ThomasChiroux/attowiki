@@ -41,8 +41,12 @@ with open("README.rst") as f:
 with open("NEWS.rst") as f:
     NEWS = f.read()
 
+VERSION = None
+try:
+    VERSION = get_git_version()
+except:
+    VERSION = None
 
-VERSION = get_git_version()
 if VERSION is None:
     try:
         file_name = "src/attowiki/RELEASE-VERSION"
@@ -110,7 +114,7 @@ setup(name='attowiki',
       keywords='restructuredText wiki',
       author='Thomas Chiroux',
       author_email='',
-      url='http://github.com',  # todo: complete this
+      url='https://github.com/ThomasChiroux/attowiki',
       license='GPLv3',
       entry_points={
           'console_scripts': ['attowiki = attowiki.main:main', ],
