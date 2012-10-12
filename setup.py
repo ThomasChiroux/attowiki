@@ -87,7 +87,8 @@ install_requires = [
     # For more details, see:
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
     'bottle',
-    'docutils', ]
+    'docutils',
+    'gitpython',]
 
 try:
     import argparse # NOQA

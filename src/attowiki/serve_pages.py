@@ -22,6 +22,7 @@ import glob
 # dependencies imports
 from bottle import request, response, template, abort
 from docutils.core import publish_string
+from git import Repo, InvalidGitRepositoryError
 
 def index():
     """looks for index.rst file and serve it.
@@ -29,6 +30,30 @@ def index():
     """
     rst_files = [file[2:-4] for file in glob.glob("./*.rst")]
     return template('index', filelist=rst_files)
+
+
+def check_repo():
+    try:
+        repo = Repo()
+    except InvalidGitRepositoryError:
+        return False
+    return True
+
+def commit(filename):
+    try:
+        repo = Repo()
+        index = repo.index
+        index.commit("Updated file: {0}".format(filename))
+    except:
+        pass
+
+def add_file_to_repo(filename):
+    try:
+        repo = Repo()
+        index = repo.index
+        index.add([filename])
+    except:
+        pass
 
 def edit(name=None):
     """edit or creates a new page
@@ -38,12 +63,14 @@ def edit(name=None):
     if name is None:
         # new page
         return template('edit', name=name, display_name=name,
+                        is_repo=check_repo(),
                         content="")
     else:
         files = glob.glob("{0}.rst".format(name))
         if len(files) > 0:
             file = open(files[0], 'r')
             return template('edit', name=name, display_name=name,
+                            is_repo=check_repo(),
                             content=file.read())
             #return template('page', page_name=files[0][2:-4],
             #                 page_content=publish_string(file.read(),
@@ -54,6 +81,20 @@ def edit(name=None):
 def page(name=None):
     """serve a page name
     """
+    if request.method == 'POST':
+        if name is None:
+            # new file
+            if len(request.forms.filename) > 0:
+                name = request.forms.filename
+
+        if name is not None:
+            filename = "{0}.rst".format(name)
+            file = open(filename, 'w')
+            file.write(request.forms.content.encode('utf-8'))
+            file.close()
+            add_file_to_repo(filename)
+            commit(filename)
+
     response.set_header('Cache-control', 'no-cache')
     response.set_header('Pragma', 'no-cache')
     if name is None:
@@ -65,7 +106,7 @@ def page(name=None):
             name = "__index__"
         else:
             name = index_files[0][2:-4]
-    return template('page', name=name, display_name=name)
+    return template('page', name=name, display_name=name, is_repo=check_repo())
 
 def iframe(name):
     """serve the iframe : the html converted rst file

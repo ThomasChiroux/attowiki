@@ -21,6 +21,7 @@
 """
 import os
 import bottle
+from git import Repo,InvalidGitRepositoryError
 
 import serve_pages
 
@@ -29,6 +30,12 @@ def main():
 
     launches the webserver locally
     """
+    # Check if the directory is under git, if not, create the repo
+    try:
+        Repo()
+    except InvalidGitRepositoryError:
+        Repo.init()
+
     # add view path from module localisation
     # todo: use pkg_resources ?
     views_path = os.path.abspath(__file__)
@@ -43,10 +50,12 @@ def main():
     app = bottle.Bottle()
     # Mission
     app.route('/', method='GET')(serve_pages.page)
+    app.route('/', method='POST')(serve_pages.page)
     app.route('/edit/')(serve_pages.edit)
     app.route('/edit/<name>')(serve_pages.edit)
     app.route('/<name>.__iframe__', method='GET')(serve_pages.iframe)
     app.route('/<name>', method='GET')(serve_pages.page)
+    app.route('/<name>', method='POST')(serve_pages.page)
 
     bottle.debug(True)
     bottle.run(app, host='localhost', port=8080)

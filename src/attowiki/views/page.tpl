@@ -79,6 +79,9 @@
     <div class="text">
         [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:<a href="{{display_name}}">{{display_name}}</a>
     </div>
+%if not is_repo:
+    <span class="warning">WARNING: no git repository found !!</span>
+%end
     <div class="buttons">
         <a href="/edit/" id="btn_new">new page</a>
 %if name != '__index__':
