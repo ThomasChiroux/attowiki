@@ -29,7 +29,7 @@ def index():
     If not found, list all the available files
     """
     rst_files = [file[2:-4] for file in glob.glob("./*.rst")]
-    return template('index', filelist=rst_files)
+    return template('index', filelist=rst_files, name="__index__")
 
 
 def check_repo():
@@ -72,9 +72,6 @@ def edit(name=None):
             return template('edit', name=name, display_name=name,
                             is_repo=check_repo(),
                             content=file.read())
-            #return template('page', page_name=files[0][2:-4],
-            #                 page_content=publish_string(file.read(),
-            #                                             writer_name='html'))
         else:
             return abort(404)
 
