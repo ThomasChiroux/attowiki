@@ -17,20 +17,26 @@
 # along with this program.
 # If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>
 #
-"""get version for the module
-"""
 
 __authors__ = [
     # alphabetical order by last name
     'Thomas Chiroux', ]
 
+from docutils.parsers.rst import Directive
+from docutils.parsers.rst import states, directives
+from docutils.parsers.rst.roles import set_classes
+from docutils.parsers.rst.directives.admonitions import BaseAdmonition
+from docutils import nodes
 
-import pkg_resources
 
-__version__ = "unknown"
+class todo(nodes.Admonition, nodes.Element):
+    pass
 
-try:
-    __version__ = pkg_resources.resource_string("attowiki",
-                                                "RELEASE-VERSION").strip()
-except IOError:
-    __version__ = "0.0.0"
+
+class todolist(nodes.General, nodes.Element):
+    pass
+
+
+class Todo(BaseAdmonition):
+    node_class = todo
+

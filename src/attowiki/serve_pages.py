@@ -18,11 +18,20 @@
 # If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>
 #
 
+__authors__ = [
+    # alphabetical order by last name
+    'Thomas Chiroux', ]
+
+
 import glob
+
 # dependencies imports
 from bottle import request, response, template, abort
 from docutils.core import publish_string
+from docutils.writers.html4css1 import Writer as HisWriter
+from tools import attowiki_distro_path
 from git import Repo, InvalidGitRepositoryError
+
 
 def index():
     """looks for index.rst file and serve it.
@@ -39,6 +48,7 @@ def check_repo():
         return False
     return True
 
+
 def commit(filename):
     try:
         repo = Repo()
@@ -47,6 +57,7 @@ def commit(filename):
     except:
         pass
 
+
 def add_file_to_repo(filename):
     try:
         repo = Repo()
@@ -54,6 +65,7 @@ def add_file_to_repo(filename):
         index.add([filename])
     except:
         pass
+
 
 def edit(name=None):
     """edit or creates a new page
@@ -74,6 +86,7 @@ def edit(name=None):
                             content=file.read())
         else:
             return abort(404)
+
 
 def page(name=None):
     """serve a page name
@@ -105,9 +118,16 @@ def page(name=None):
             name = index_files[0][2:-4]
     return template('page', name=name, display_name=name, is_repo=check_repo())
 
+
 def iframe(name):
     """serve the iframe : the html converted rst file
     """
+
+    args = {
+        'stylesheet_path' : attowiki_distro_path()
+                            + '/views/attowiki_docutils.css'
+    }
+
     response.set_header('Cache-control', 'no-cache')
     response.set_header('Pragma', 'no-cache')
     if name == '__index__':
@@ -117,9 +137,9 @@ def iframe(name):
         files = glob.glob("{0}.rst".format(name))
         if len(files) > 0:
             file = open(files[0], 'r')
-            return publish_string(file.read(), writer_name='html')
-            #return template('page', page_name=files[0][2:-4],
-            #                 page_content=publish_string(file.read(),
-            #                                             writer_name='html'))
+            return publish_string(file.read(),
+                                  writer=HisWriter(),
+                                  settings=None,
+                                  settings_overrides=args)
         else:
             return abort(404)

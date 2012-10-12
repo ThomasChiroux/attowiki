@@ -19,17 +19,42 @@
 #
 """file for main entry point
 """
+
+__authors__ = [
+    # alphabetical order by last name
+    'Thomas Chiroux', ]
+
+
 import os
 import bottle
 from git import Repo,InvalidGitRepositoryError
+from docutils.parsers.rst import directives
+from docutils import nodes, languages
+from docutils.parsers.rst.directives.admonitions import BaseAdmonition
+import docutils
 
 import serve_pages
+from rstdirective_todo import Todo
+from tools import attowiki_distro_path
+
+
 
 def main():
     """main entry point
 
     launches the webserver locally
     """
+
+    # register specific rst directives
+    # small trick here: get_language will reveal languages.en
+    labels = languages.get_language('en').labels
+    # add the label
+    languages.en.labels["todo"]="Todo"
+    # add node
+    nodes._add_node_class_names(['todo', 'todolist'])
+    # register the new directive todo
+    directives.register_directive('todo', Todo)
+
     # Check if the directory is under git, if not, create the repo
     try:
         Repo()
@@ -37,14 +62,8 @@ def main():
         Repo.init()
 
     # add view path from module localisation
-    # todo: use pkg_resources ?
-    views_path = os.path.abspath(__file__)
-    if views_path[-1] != '/':
-        views_path = views_path[:views_path.rfind('/')]
-    else:
-        views_path = views_path[:views_path[:-1].rfind('/')]
-    views_path = views_path + '/views/'
-    print views_path
+
+    views_path = attowiki_distro_path() + '/views/'
     bottle.TEMPLATE_PATH.insert(0, views_path)
 
     app = bottle.Bottle()

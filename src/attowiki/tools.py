@@ -17,20 +17,24 @@
 # along with this program.
 # If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>
 #
-"""get version for the module
+"""common tools for the project
 """
 
 __authors__ = [
     # alphabetical order by last name
     'Thomas Chiroux', ]
 
+import os
 
-import pkg_resources
 
-__version__ = "unknown"
+def attowiki_distro_path():
+    """return the absolute complete path where attowiki is located
 
-try:
-    __version__ = pkg_resources.resource_string("attowiki",
-                                                "RELEASE-VERSION").strip()
-except IOError:
-    __version__ = "0.0.0"
+    .. todo:: use pkg_resources ?
+    """
+    attowiki_path = os.path.abspath(__file__)
+    if attowiki_path[-1] != '/':
+        attowiki_path = attowiki_path[:attowiki_path.rfind('/')]
+    else:
+        attowiki_path = attowiki_path[:attowiki_path[:-1].rfind('/')]
+    return attowiki_path
