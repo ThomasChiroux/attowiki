@@ -131,5 +131,5 @@ setup(name='attowiki',
       test_suite = 'nose.collector',
       extras_require = {
           'doc':  ["sphinx", ],
-          'devel_tools':  ["ipython", "pylint", "pep8", ],
+          'devel_tools':  ["ipython", "pylint", "pep8", "flake8",],
       },)

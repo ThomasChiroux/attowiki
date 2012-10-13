@@ -20,7 +20,7 @@
 
 %if name is None:
         <form name="page_edit" method="post" action="/">
-        filename: <input name="filename" size="20"></input>
+        filename: <input name="filename" size="20" value="{{today}}_"></input>
 %else:
         <form name="page_edit" method="post" action="/{{display_name}}">
 %end

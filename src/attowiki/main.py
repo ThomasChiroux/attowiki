@@ -24,19 +24,16 @@ __authors__ = [
     # alphabetical order by last name
     'Thomas Chiroux', ]
 
-
-import os
+# dependencies imports
 import bottle
-from git import Repo,InvalidGitRepositoryError
+from git import Repo, InvalidGitRepositoryError
 from docutils.parsers.rst import directives
 from docutils import nodes, languages
-from docutils.parsers.rst.directives.admonitions import BaseAdmonition
-import docutils
 
-import serve_pages
-from rstdirective_todo import Todo
-from tools import attowiki_distro_path
-
+# project imports
+from attowiki import serve_pages
+from attowiki.rstdirective_todo import Todo
+from attowiki.tools import attowiki_distro_path
 
 
 def main():
@@ -49,7 +46,7 @@ def main():
     # small trick here: get_language will reveal languages.en
     labels = languages.get_language('en').labels
     # add the label
-    languages.en.labels["todo"]="Todo"
+    languages.en.labels["todo"] = "Todo"
     # add node
     nodes._add_node_class_names(['todo', 'todolist'])
     # register the new directive todo
@@ -62,19 +59,39 @@ def main():
         Repo.init()
 
     # add view path from module localisation
-
     views_path = attowiki_distro_path() + '/views/'
     bottle.TEMPLATE_PATH.insert(0, views_path)
 
     app = bottle.Bottle()
-    # Mission
-    app.route('/', method='GET')(serve_pages.page)
-    app.route('/', method='POST')(serve_pages.page)
-    app.route('/edit/')(serve_pages.edit)
-    app.route('/edit/<name>')(serve_pages.edit)
-    app.route('/<name>.__iframe__', method='GET')(serve_pages.iframe)
-    app.route('/<name>', method='GET')(serve_pages.page)
-    app.route('/<name>', method='POST')(serve_pages.page)
 
-    bottle.debug(True)
-    bottle.run(app, host='localhost', port=8080)
+    # All the Urls of the project
+    # index or __index__
+    app.route('/', method='GET')(serve_pages.view_page)
+    # new page
+    app.route('/', method='POST')(serve_pages.view_page)
+    app.route('/edit/')(serve_pages.view_edit)
+    # edit an existing page
+    app.route('/edit/<name>')(serve_pages.view_edit)
+    # render an existing page using docutils
+    app.route('/<name>.__iframe__', method='GET')(serve_pages.view_iframe)
+    # view an existing page
+    app.route('/<name>', method='GET')(serve_pages.view_page)
+    # write new content to an existing page
+    app.route('/<name>', method='POST')(serve_pages.view_page)
+
+    # for devt purpose: set bottle in debug mode
+    bottle.debug(True)  # this line may be commented in production mode
+
+    # run locally by default
+    from optparse import OptionParser
+    cmd_parser = OptionParser(usage="usage: %prog package.module:app")
+    cmd_options, cmd_args = cmd_parser.parse_args()
+    if len(cmd_args) >= 2:
+        host, port = (cmd_args[0] or 'localhost'), (cmd_args[1] or 8080)
+    elif len(cmd_args) == 1:
+        host, port = (cmd_args[0] or 'localhost'), (8080)
+    else:
+        host, port = ('localhost'), (8080)
+    if ':' in host:
+        host, port = host.rsplit(':', 1)
+    bottle.run(app, host=host, port=port)
