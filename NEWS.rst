@@ -1,6 +1,13 @@
 Version History
 ---------------
 
+v0.3
+""""
+
+* added todo directive support in rest files (now display correctly a todo)
+* changed a little bit the default docutils css
+* added background saving feature
+
 v0.2
 """"
 
