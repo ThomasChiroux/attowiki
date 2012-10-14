@@ -48,7 +48,6 @@
             border:1px solid #dcdcdc;
             display:inline-block;
             color:#777777;
-            font-family:monospace;
             font-size:10px;
             font-weight:bold;
             padding:2px 10px;
@@ -95,6 +94,11 @@
             top:2px;
         }
 
+        a#btn_save.saving {
+            color:#ff0000;
+            border:1px solid #777777;
+        }
+
         .warning {
             position:absolute;
             top:3px;
@@ -102,5 +106,38 @@
             color:darkred;
             font-weight:bold;
         }
+
+        .main_content {
+            /*position: absolute;*/
+            top: 21px;
+            left: 0;
+            bottom: 0;
+            right:0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #textcontent {
+            font-family: "Consolas", "Monaco", "Lucida Console", "Liberation Mono", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+            height:100%;
+            width:100%;
+        }
+        }
     </style>
+    <script type="text/javascript">
+        function hasClass(ele,cls) {
+            return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+        }
+
+        function addClass(ele,cls) {
+            if (!hasClass(ele,cls)) ele.className += " "+cls;
+        }
+
+        function removeClass(ele,cls) {
+            if (hasClass(ele,cls)) {
+                var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+                ele.className=ele.className.replace(reg,' ');
+            }
+        }
+    </script>
 </head>

@@ -78,6 +78,8 @@ def commit(filename):
     """
     try:
         repo = Repo()
+        #gitcmd = repo.git
+        #gitcmd.commit(filename)
         index = repo.index
         index.commit("Updated file: {0}".format(filename))
     except Exception:
@@ -103,6 +105,52 @@ def add_file_to_repo(filename):
         index.add([filename])
     except Exception:
         pass
+
+def reset_to_last_commit():
+    """reset a modified file to his last commit status
+
+    This method does the same than a ::
+
+        $ git reset --hard
+
+    Keyword Arguments:
+        <none>
+
+    Returns:
+        <nothing>
+    """
+    try:
+        repo = Repo()
+        gitcmd = repo.git
+        gitcmd.reset(hard=True)
+    except Exception:
+        pass
+
+
+def view_cancel_edit(name=None):
+    """cancel the edition of an existing page and render the last modification
+    status
+
+    .. note:: this is a bottle view
+
+    if no page name is given, do nothing (it may leave some .tmp. files in
+    the directory).
+
+    Keyword Arguments:
+        :name: (str) -- name of the page (OPTIONAL)
+
+    Returns:
+        bottle response object
+    """
+    if name is None:
+        return view_page(None)
+    else:
+        files = glob.glob("{0}.rst".format(name))
+        if len(files) > 0:
+            reset_to_last_commit()
+            return view_page(name)
+        else:
+            return abort(404)
 
 
 def view_edit(name=None):
@@ -194,6 +242,39 @@ def view_page(name=None):
         else:
             name = index_files[0][2:-4]
     return template('page', name=name, display_name=name, is_repo=check_repo())
+
+def view_quick_save_page(name=None):
+    """quick save a page
+
+    .. note:: this is a bottle view
+
+    * this view must be called with the PUT method
+      write the new page content to the file, and not not commit or redirect
+
+    Keyword Arguments:
+        :name: (str) -- name of the rest file (without the .rst extension)
+
+    Returns:
+        bottle response object (200 OK)
+    """
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    if request.method == 'PUT':
+        if name is None:
+            # new file
+            if len(request.forms.filename) > 0:
+                name = request.forms.filename
+
+        if name is not None:
+            filename = "{0}.rst".format(name)
+            file_handle = open(filename, 'w')
+            content = request.body.read()
+            content = content.decode('utf-8')
+            file_handle.write(content.encode('utf-8'))
+            file_handle.close()
+            return "OK"
+        else:
+            return abort(404)
 
 
 def view_iframe(name):

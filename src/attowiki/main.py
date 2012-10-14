@@ -72,12 +72,17 @@ def main():
     app.route('/edit/')(serve_pages.view_edit)
     # edit an existing page
     app.route('/edit/<name>')(serve_pages.view_edit)
+    # cancel the edition of an existing page
+    app.route('/cancel-edit/')(serve_pages.view_cancel_edit)
+    app.route('/cancel-edit/<name>')(serve_pages.view_cancel_edit)
     # render an existing page using docutils
     app.route('/<name>.__iframe__', method='GET')(serve_pages.view_iframe)
     # view an existing page
     app.route('/<name>', method='GET')(serve_pages.view_page)
     # write new content to an existing page
     app.route('/<name>', method='POST')(serve_pages.view_page)
+    # write new content to an existing page (without commit - for quick save)
+    app.route('/<name>', method='PUT')(serve_pages.view_quick_save_page)
 
     # for devt purpose: set bottle in debug mode
     bottle.debug(True)  # this line may be commented in production mode
