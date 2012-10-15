@@ -125,8 +125,7 @@ def view_meta_cheat_sheet():
     """Display a cheat sheet of reST syntax
     """
     response.set_header('Content-Type', 'text')
-    return template('rst_cheat_sheet', name="__cheatsheet__",
-                    display_name="__cheatsheet__", is_repo=True)
+    return template('rst_cheat_sheet')
 
 def view_meta_index():
     """List all the available .rst files in the directory
@@ -166,13 +165,10 @@ def view_meta_todos():
     doc2_pub.reader.document.append(section1)
     title1 = nodes.title("TODO LIST", "TODO LIST")
     doc2_pub.reader.document.append(title1)
-    print doc2_pub.document
-    print "------------------------------------------------------------------"
     rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
     rst_files.reverse()
     for file in rst_files:
         file_title = False
-        print 'scanning file: %s' % file
         file_handle = open(file + '.rst', 'r')
         file_content = file_handle.read()
         file_handle.close()
@@ -195,27 +191,31 @@ def view_meta_todos():
         parser = docutils.parsers.rst.Parser()
         document = docutils.utils.new_document('test', my_settings)
         parser.parse(file_content, document)
-        for node in document.traverse(todo):  # docutils.nodes.todo):  # todo):
-            print "   ...one node"
+        for node in document.traverse(todo):  # docutils.nodes.note):  # todo):
             if not file_title:
                 file_title = True
+                # new section
                 section2 = nodes.section(file)
                 doc2_pub.reader.document.append(section2)
-                title2 = nodes.paragraph(file, file)
-                doc2_pub.reader.document.append(title2)
+                # add link to the originating file
+                paragraph = nodes.paragraph()
+                file_target = nodes.target(ids=[file],
+                                           names=[file],
+                                           refuri="/"+file)
+                file_ref = nodes.reference(file, file,
+                                           name=file,
+                                           refuri="/"+file)
+                paragraph.append(nodes.Text("in "))
+                paragraph.append(file_ref)
+                paragraph.append(file_target)
+                paragraph.append(nodes.Text(":"))
+                doc2_pub.reader.document.append(paragraph)
+                #doc2_pub.reader.document.append(file_target)
 
             doc2_pub.reader.document.append(node)
-            #doc2_pub.reader.document.append(node)
-        print doc2_pub.document
-        print "..............................................."
         doc2_pub.apply_transforms()
-        print doc2_pub.document
-        print "..............................................."
 
-    result =  doc2_pub.writer.write(doc2_pub.document, doc2_pub.destination)  # doc2_pub.publish(enable_exit_status=False)
-    print "##################################################################"
-    print result
-    print "##################################################################"
+    result =  doc2_pub.writer.write(doc2_pub.document, doc2_pub.destination)
     return result
 
 
