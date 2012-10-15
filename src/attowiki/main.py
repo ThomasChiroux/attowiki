@@ -32,7 +32,9 @@ from docutils import nodes, languages
 
 # project imports
 from attowiki import serve_pages
-from attowiki.rstdirective_todo import add_node, todo, visit_todo, depart_todo, Todo
+from attowiki.rstdirective_todo import add_node
+from attowiki.rstdirective_todo import todo, visit_todo, depart_todo, Todo
+from attowiki.rstdirective_todo import done, visit_done, depart_done, Done
 from attowiki.tools import attowiki_distro_path
 
 
@@ -56,6 +58,18 @@ def main():
 
     # register the new directive todo
     directives.register_directive('todo', Todo)
+
+    # add the label
+    languages.en.labels["done"] = "Done"
+    # add node
+    add_node(done,
+             html=(visit_done, depart_done),
+             latex=(visit_done, depart_done),
+             text=(visit_done, depart_done))
+    #nodes._add_node_class_names(['todo'])
+
+    # register the new directive todo
+    directives.register_directive('done', Done)
 
     # Check if the directory is under git, if not, create the repo
     try:
