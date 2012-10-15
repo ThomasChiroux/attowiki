@@ -222,7 +222,7 @@ pre.address {
     margin-top: 0 ;
     font: inherit }
 
-pre.literal-block, pre.doctest-block, pre.math {
+pre.math {
     margin-left: 2em ;
     margin-right: 2em }
 
@@ -285,6 +285,18 @@ ul.auto-toc {
     list-style-type: none }
 
 /********* STANDARD OBJECT BUT CUSTOM CSS *********/
+pre.literal-block, pre.doctest-block {
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    -webkit-border-radius:6px;
+    border-radius:6px;
+    border:1px solid #dcdcdc;
+    background-color: #dde4dd;
+}
+
 div.admonition, div.hint, div.note, div.tip {
     margin: 2em ;
     padding: 1em;

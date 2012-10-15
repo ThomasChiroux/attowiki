@@ -12,9 +12,9 @@ It's main features are:
 * added 2 new directives: 'todo' and 'done'
 * some meta pages, including:
 
-  * :/__index__: gives a list of all meta pages and normal pages
-  * :/__todo__: gives a list of all todo found in all pages
-  * :/__cheatsheet__: docutils reStructuredText cheat sheet
+  * */__index__*: gives a list of all meta pages and normal pages
+  * */__todo__*: gives a list of all todo found in all pages
+  * */__cheatsheet__*: docutils reStructuredText cheat sheet
 
 usage
 -----
@@ -38,7 +38,7 @@ installation
 
 ::
 
-    pip install attowiki
+    $ pip install attowiki
 
 
 project dependencies
