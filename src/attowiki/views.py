@@ -37,7 +37,7 @@ from docutils import io, nodes
 
 
 # project imports
-from attowiki.rst_directives import todo
+from attowiki.rst_directives import todo, done
 from attowiki.git_tools import check_repo, commit, \
                                reset_to_last_commit, add_file_to_repo
 
@@ -61,11 +61,36 @@ def view_meta_index():
                     is_repo=check_repo())
 
 
-def view_meta_todos():
-    """List all todos from all the rst files found in directory
+def view_meta_admonition(admonition_name, name=None):
+    """List all found admonition from all the rst files found in directory
 
-    view_meta_todos is called by the 'meta' url: /__todos__
+    view_meta_admonition is called by the 'meta' url: /__XXXXXXX__
+    where XXXXXXX represents and admonition name, like:
+
+    * todo
+    * warning
+    * danger
+    * ...
+
+    .. note:: this function may works for any docutils node, not only
+       admonition
+
+    Keyword Arguments:
+
+        :admonition_name: (str) -- name of the admonition
     """
+    print "meta admo: %s - %s" % (admonition_name, name)
+    admonition = None
+
+    if admonition_name == 'todo':
+        admonition = todo
+    elif admonition_name == 'done':
+        admonition = done
+    elif hasattr(nodes, admonition_name):
+        admonition = getattr(nodes, admonition_name)
+    else:
+        return abort(404)
+
     doc2_content=""
 
     doc2_output, doc2_pub = docutils.core.publish_programmatically(
@@ -82,12 +107,17 @@ def view_meta_todos():
                                 config_section=None,
                                 enable_exit_status=False)
 
-    section1 = nodes.section("todo_list_file")
+    section1 = nodes.section("{0}_list_file".format(admonition_name))
     doc2_pub.reader.document.append(section1)
-    title1 = nodes.title("TODO LIST", "TODO LIST")
+    title1 = nodes.title("{0} LIST".format(admonition_name.upper()),
+                         "{0} LIST".format(admonition_name.upper()))
     doc2_pub.reader.document.append(title1)
-    rst_files = [filename[2:-4] for filename in sorted(glob.glob("./*.rst"))]
-    rst_files.reverse()
+    if name is None:
+        rst_files = [filename[2:-4] for filename in sorted(glob.glob("./*.rst"))]
+        rst_files.reverse()
+    else:
+        rst_files = [filename[2:-4] for filename in
+                     sorted(glob.glob("./{0}.rst".format(name)))]
     for file in rst_files:
         file_title = False
         file_handle = open(file + '.rst', 'r')
@@ -112,7 +142,7 @@ def view_meta_todos():
         parser = docutils.parsers.rst.Parser()
         document = docutils.utils.new_document('test', my_settings)
         parser.parse(file_content, document)
-        for node in document.traverse(todo):  # docutils.nodes.note):  # todo):
+        for node in document.traverse(admonition):
             if not file_title:
                 file_title = True
                 # new section
@@ -138,8 +168,15 @@ def view_meta_todos():
 
     doc2_pub.writer.write(doc2_pub.document, doc2_pub.destination)
     doc2_pub.writer.assemble_parts()
+    if name is None:
+        display_file_name = '__{0}__'.format(admonition_name)
+        extended_name = None
+    else:
+        display_file_name = '{0}'.format(name)
+        extended_name = '__{0}__'.format(admonition_name)
     return template('page',
-                    name='__todo__',
+                    name=display_file_name,
+                    extended_name=extended_name,
                     is_repo=check_repo(),
                     content=doc2_pub.writer.parts['html_body'])
 
@@ -267,6 +304,7 @@ def view_page(name=None):
                                    settings_overrides=None)['html_body']
         return template('page',
                         name=name,
+                        extended_name=None,
                         is_repo=check_repo(),
                         content=html_body)
     else:

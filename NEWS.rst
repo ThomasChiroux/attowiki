@@ -1,6 +1,40 @@
 Version History
 ---------------
 
+current
+"""""""
+
+* added __todo__ meta page which scan all the directory for todo directives
+  and display it in one page
+* added more generic __xxxxxxxx__ meta page which scan all the directory
+  for the xxxxxxxx admnonition. This may work with any registered node,
+  especially admonitions:
+
+  * __todo__
+  * __done__
+  * __attention__
+  * __caution__
+  * __danger__
+  * __error__
+  * __hint__
+  * __important__
+  * __note__
+  * __tip__
+  * __warning__
+  * __admonition__
+
+* added possibility to use the "admonition" meta pages for one page only
+  using this kind of url: /name of the doc.__admonition_name__
+
+* added __cheatsheet__ meta page which provides locally a docutils reST
+  cheatsheet
+* added 'done' directive, in order to work with todo: when a task is done,
+  edit the page and change 'todo' to 'done' (it will remove it from
+  __todo__ meta page)
+* removed iframe
+* improved docutils css
+* some other refactors
+
 v0.3
 """"
 

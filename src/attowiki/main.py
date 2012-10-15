@@ -90,8 +90,8 @@ def main():
     app.route('/', method='POST')(views.view_page)
     # meta pages
     app.route('/__index__')(views.view_meta_index)
-    app.route('/__todo__')(views.view_meta_todos)
     app.route('/__cheatsheet__')(views.view_meta_cheat_sheet)
+    app.route('/__<admonition_name>__')(views.view_meta_admonition)
 
     # new page
     app.route('/edit/')(views.view_edit)
@@ -102,8 +102,11 @@ def main():
     app.route('/cancel-edit/')(views.view_cancel_edit)
     app.route('/cancel-edit/<name>')(views.view_cancel_edit)
 
+    # meta page for one single document
+    app.route('/<name>.__<admonition_name>__')(views.view_meta_admonition)
     # view an existing page
     app.route('/<name>', method='GET')(views.view_page)
+
     # write new content to an existing page
     app.route('/<name>', method='POST')(views.view_page)
     # write new content to an existing page (without commit - for quick save)
