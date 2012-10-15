@@ -10,17 +10,23 @@
     <title>{{name}}</title>
 %end
     <style type="text/css">
+%include attowiki_docutils_css
+    </style>
+    <style type="text/css">
         html {height:100%}
         body {
             margin:0;
             height:100%;
-            overflow:hidden;
+        }
+
+        body.edit {
+            overflow: hidden;
         }
 
         .header {
             width: 100%;
             height: 20px;
-            font-family:monospace;
+            font-family: "Consolas", "Monaco", "Lucida Console", "Liberation Mono", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
             font-size: 12px;
             border-bottom-style:solid;
             border-width: 1px;
@@ -99,7 +105,7 @@
             border:1px solid #777777;
         }
 
-        .warning {
+        .header .warning {
             position:absolute;
             top:3px;
             right:150px;
@@ -107,20 +113,27 @@
             font-weight:bold;
         }
 
-        .main_content {
+        form.edit_form {
             /*position: absolute;*/
-            top: 21px;
+            top: 0;
             left: 0;
             bottom: 0;
             right:0;
-            width: 100%;
+            overflow: hidden;
             height: 100%;
+            width: 100%;
+
         }
 
         #textcontent {
             font-family: "Consolas", "Monaco", "Lucida Console", "Liberation Mono", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
-            height:100%;
+            /*margin-right: 5px;*/
+            margin: 0;
+            padding: 0;
             width:100%;
+            height:100%;
+            /*height:100%;
+            width:100%;*/
         }
         }
     </style>

@@ -29,9 +29,9 @@ import glob
 import datetime
 
 # dependencies imports
-from bottle import request, response, template, abort
+from bottle import request, response, template, abort, redirect
 import docutils
-from docutils.core import publish_string
+from docutils.core import publish_string, publish_parts
 from docutils.writers.html4css1 import Writer as HisWriter
 from docutils import io, nodes
 from git import Repo, InvalidGitRepositoryError
@@ -132,9 +132,12 @@ def view_meta_index():
 
     view_meta_index is called by the 'meta' url : /__index__
     """
-    rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
+    rst_files = [filename[2:-4] for filename in sorted(glob.glob("./*.rst"))]
     rst_files.reverse()
-    return template('index', filelist=rst_files, name="__index__")
+    return template('index',
+                    filelist=rst_files,
+                    name="__index__",
+                    is_repo=check_repo())
 
 
 def view_meta_todos():
@@ -142,9 +145,6 @@ def view_meta_todos():
 
     view_meta_todos is called by the 'meta' url: /__todos__
     """
-    args = {'stylesheet_path':
-                attowiki_distro_path() + '/views/attowiki_docutils.css'}
-
     doc2_content=""
 
     doc2_output, doc2_pub = docutils.core.publish_programmatically(
@@ -157,7 +157,7 @@ def view_meta_todos():
                                 parser=None, parser_name='restructuredtext',
                                 writer=HisWriter(), writer_name=None,
                                 settings=None, settings_spec=None,
-                                settings_overrides=args,
+                                settings_overrides=None,
                                 config_section=None,
                                 enable_exit_status=False)
 
@@ -165,7 +165,7 @@ def view_meta_todos():
     doc2_pub.reader.document.append(section1)
     title1 = nodes.title("TODO LIST", "TODO LIST")
     doc2_pub.reader.document.append(title1)
-    rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
+    rst_files = [filename[2:-4] for filename in sorted(glob.glob("./*.rst"))]
     rst_files.reverse()
     for file in rst_files:
         file_title = False
@@ -215,8 +215,13 @@ def view_meta_todos():
             doc2_pub.reader.document.append(node)
         doc2_pub.apply_transforms()
 
-    result =  doc2_pub.writer.write(doc2_pub.document, doc2_pub.destination)
-    return result
+    doc2_pub.writer.write(doc2_pub.document, doc2_pub.destination)
+    doc2_pub.writer.assemble_parts()
+    return template('page',
+                    name='__todo__',
+                    is_repo=check_repo(),
+                    content=doc2_pub.writer.parts['html_body'])
+
 
 
 def view_cancel_edit(name=None):
@@ -235,12 +240,12 @@ def view_cancel_edit(name=None):
         bottle response object
     """
     if name is None:
-        return view_page(None)
+        return redirect('/')
     else:
         files = glob.glob("{0}.rst".format(name))
         if len(files) > 0:
             reset_to_last_commit()
-            return view_page(name)
+            return redirect('/'+name)
         else:
             return abort(404)
 
@@ -264,7 +269,6 @@ def view_edit(name=None):
         # new page
         return template('edit',
                         name=name,
-                        display_name=name,
                         is_repo=check_repo(),
                         today=datetime.datetime.now().strftime("%Y%m%d"),
                         content="")
@@ -274,7 +278,6 @@ def view_edit(name=None):
             file_handle = open(files[0], 'r')
             return template('edit',
                             name=name,
-                            display_name=name,
                             is_repo=check_repo(),
                             today=datetime.datetime.now().strftime("%Y%m%d"),
                             content=file_handle.read())
@@ -330,10 +333,23 @@ def view_page(name=None):
         if len(index_files) == 0:
             # not found
             # redirect to __index__
-            name = "__index__"
+            return view_meta_index()
         else:
             name = index_files[0][2:-4]
-    return template('page', name=name, display_name=name, is_repo=check_repo())
+
+    files = glob.glob("{0}.rst".format(name))
+    if len(files) > 0:
+        file_handle = open(files[0], 'r')
+        html_body = publish_parts(file_handle.read(),
+                                   writer=HisWriter(),
+                                   settings=None,
+                                   settings_overrides=None)['html_body']
+        return template('page',
+                        name=name,
+                        is_repo=check_repo(),
+                        content=html_body)
+    else:
+        return abort(404)
 
 
 def view_quick_save_page(name=None):
@@ -366,37 +382,5 @@ def view_quick_save_page(name=None):
             file_handle.write(content.encode('utf-8'))
             file_handle.close()
             return "OK"
-        else:
-            return abort(404)
-
-
-def view_iframe(name):
-    """serve the iframe : the html converted rst file
-
-    .. note:: this is a bottle view
-
-    Take a filename in argument (without .rst) and uses docutils to
-    render the rst file in html.
-
-    Keyword Arguments:
-        :name: (str) -- name of the file (MANDATORY)
-    """
-
-    args = {'stylesheet_path':
-            attowiki_distro_path() + '/views/attowiki_docutils.css'}
-
-    response.set_header('Cache-control', 'no-cache')
-    response.set_header('Pragma', 'no-cache')
-    if name == '__index__':
-        # we should generate and index page
-        return view_meta_index()
-    else:
-        files = glob.glob("{0}.rst".format(name))
-        if len(files) > 0:
-            file_handle = open(files[0], 'r')
-            return publish_string(file_handle.read(),
-                                  writer=HisWriter(),
-                                  settings=None,
-                                  settings_overrides=args)
         else:
             return abort(404)

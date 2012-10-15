@@ -88,18 +88,20 @@ def main():
     app.route('/', method='GET')(serve_pages.view_page)
     # new page
     app.route('/', method='POST')(serve_pages.view_page)
+    # meta pages
+    app.route('/__index__')(serve_pages.view_meta_index)
+    app.route('/__todo__')(serve_pages.view_meta_todos)
+    app.route('/__cheatsheet__')(serve_pages.view_meta_cheat_sheet)
 
-    app.route('/__todo__.__iframe__', method='GET')(serve_pages.view_meta_todos)
-    app.route('/__cheatsheet__.__iframe__')(serve_pages.view_meta_cheat_sheet)
-
+    # new page
     app.route('/edit/')(serve_pages.view_edit)
     # edit an existing page
     app.route('/edit/<name>')(serve_pages.view_edit)
+
     # cancel the edition of an existing page
     app.route('/cancel-edit/')(serve_pages.view_cancel_edit)
     app.route('/cancel-edit/<name>')(serve_pages.view_cancel_edit)
-    # render an existing page using docutils
-    app.route('/<name>.__iframe__', method='GET')(serve_pages.view_iframe)
+
     # view an existing page
     app.route('/<name>', method='GET')(serve_pages.view_page)
     # write new content to an existing page

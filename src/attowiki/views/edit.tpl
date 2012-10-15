@@ -1,5 +1,5 @@
 %include header name=name
-<body>
+<body class="edit">
 <script type="text/javascript">
     function quickSave()
     {
@@ -15,7 +15,7 @@
                 return;
             }
 %else:
-            httpRequest.open('PUT','/{{display_name}}',true);
+            httpRequest.open('PUT','/{{name}}',true);
 %end
         // change the color of 'save' button
         addClass(document.getElementById("btn_save"), 'saving');
@@ -53,7 +53,7 @@
 %if name is None:
         [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:
 %else:
-        [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:<a href="/{{display_name}}">{{display_name}}</a>
+        [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:<a href="/{{name}}">{{name}}</a>
 %end
     </div>
 %if not is_repo:
@@ -63,23 +63,23 @@
 %if name is None:
         <a href="/cancel-edit/" id="btn_cancel">cancel</a>
 %else:
-        <a href="/cancel-edit/{{display_name}}" id="btn_cancel">cancel</a>
+        <a href="/cancel-edit/{{name}}" id="btn_cancel">cancel</a>
 %end
         <a href="#" id="btn_save" onclick="document.forms['page_edit'].submit();">save</a>
     </div>
 </div>
-<div class="main_content">
+<!--<div class="main_content">-->
 
 %if name is None:
-        <form name="page_edit" method="post" action="/" class="main_content">
+        <form name="page_edit" method="post" action="/" class="edit_form">
         filename: <input name="filename" size="20" value="{{today}}_"></input>
 %else:
-        <form name="page_edit" method="post" action="/{{display_name}}" class="main_content">
+        <form name="page_edit" method="post" action="/{{name}}" class="edit_form">
 %end
         <textarea id="textcontent" name="content" cols="80" rows="40" class="textcontent">{{content}}</textarea>
 
     </form>
-</div>
+<!--</div>-->
 
 </body>
 <script type="text/javascript">
