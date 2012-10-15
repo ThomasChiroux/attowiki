@@ -32,7 +32,7 @@ from docutils import nodes, languages
 
 # project imports
 from attowiki import serve_pages
-from attowiki.rstdirective_todo import Todo
+from attowiki.rstdirective_todo import add_node, todo, visit_todo, depart_todo, Todo
 from attowiki.tools import attowiki_distro_path
 
 
@@ -48,7 +48,12 @@ def main():
     # add the label
     languages.en.labels["todo"] = "Todo"
     # add node
-    nodes._add_node_class_names(['todo', 'todolist'])
+    add_node(todo,
+             html=(visit_todo, depart_todo),
+             latex=(visit_todo, depart_todo),
+             text=(visit_todo, depart_todo))
+    #nodes._add_node_class_names(['todo'])
+
     # register the new directive todo
     directives.register_directive('todo', Todo)
 
@@ -69,6 +74,9 @@ def main():
     app.route('/', method='GET')(serve_pages.view_page)
     # new page
     app.route('/', method='POST')(serve_pages.view_page)
+
+    app.route('/__todos__', method='GET')(serve_pages.view_meta_todos)
+
     app.route('/edit/')(serve_pages.view_edit)
     # edit an existing page
     app.route('/edit/<name>')(serve_pages.view_edit)

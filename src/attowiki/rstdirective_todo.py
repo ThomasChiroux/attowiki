@@ -27,10 +27,46 @@ __authors__ = [
 from docutils.parsers.rst.directives.admonitions import BaseAdmonition
 from docutils import nodes
 
+def add_node(node, **kwds):
+    """add_node from Sphinx
+    """
+    nodes._add_node_class_names([node.__name__])
+    for key, val in kwds.iteritems():
+        try:
+            visit, depart = val
+        except ValueError:
+            raise ValueError('Value for key %r must be a '
+                                 '(visit, depart) function tuple' % key)
+        if key == 'html':
+            from sphinx.writers.html import HTMLTranslator as translator
+        elif key == 'latex':
+            from sphinx.writers.latex import LaTeXTranslator as translator
+        elif key == 'text':
+            from sphinx.writers.text import TextTranslator as translator
+        elif key == 'man':
+            from sphinx.writers.manpage import ManualPageTranslator\
+            as translator
+        elif key == 'texinfo':
+            from sphinx.writers.texinfo import TexinfoTranslator\
+            as translator
+        else:
+            # ignore invalid keys for compatibility
+            continue
+        setattr(translator, 'visit_'+node.__name__, visit)
+        if depart:
+            setattr(translator, 'depart_'+node.__name__, depart)
 
 class todo(nodes.Admonition, nodes.Element):
     """todo node for docutils"""
     pass
+
+
+def visit_todo(self, node):
+    self.visit_admonition(node)
+
+
+def depart_todo(self, node):
+    self.depart_admonition(node)
 
 
 class Todo(BaseAdmonition):

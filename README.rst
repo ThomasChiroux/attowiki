@@ -1,14 +1,14 @@
-========
 attowiki
 ========
 
 attowiki is a very small wiki engine for personal use.
 
-It's main functions are:
+It's main features are:
 
 * can be started in any directory
 * uses all .rst files in directory structure as wiki files
 * uses git for revision control
+* automatic background saving
 
 usage
 -----

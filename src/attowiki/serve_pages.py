@@ -30,21 +30,15 @@ import datetime
 
 # dependencies imports
 from bottle import request, response, template, abort
+import docutils
 from docutils.core import publish_string
 from docutils.writers.html4css1 import Writer as HisWriter
+from docutils import io, nodes
 from git import Repo, InvalidGitRepositoryError
 
 # project imports
 from attowiki.tools import attowiki_distro_path
-
-
-def view_meta_index():
-    """List all the available .rst files in the directory
-
-    index is called by the 'meta' url : /__index__
-    """
-    rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
-    return template('index', filelist=rst_files, name="__index__")
+from attowiki.rstdirective_todo import todo
 
 
 def check_repo():
@@ -106,6 +100,7 @@ def add_file_to_repo(filename):
     except Exception:
         pass
 
+
 def reset_to_last_commit():
     """reset a modified file to his last commit status
 
@@ -125,6 +120,95 @@ def reset_to_last_commit():
         gitcmd.reset(hard=True)
     except Exception:
         pass
+
+
+def view_meta_index():
+    """List all the available .rst files in the directory
+
+    view_meta_index is called by the 'meta' url : /__index__
+    """
+    rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
+    return template('index', filelist=rst_files, name="__index__")
+
+
+def view_meta_todos():
+    """List all todos from all the rst files found in directory
+
+    view_meta_todos is called by the 'meta' url: /__todos__
+    """
+    args = {'stylesheet_path':
+                attowiki_distro_path() + '/views/attowiki_docutils.css'}
+
+    doc2_content=""
+
+    doc2_output, doc2_pub = docutils.core.publish_programmatically(
+                                source_class=io.StringInput,
+                                source=doc2_content,
+                                source_path=None,
+                                destination_class=io.StringOutput,
+                                destination=None, destination_path=None,
+                                reader=None, reader_name='standalone',
+                                parser=None, parser_name='restructuredtext',
+                                writer=HisWriter(), writer_name=None,
+                                settings=None, settings_spec=None,
+                                settings_overrides=args,
+                                config_section=None,
+                                enable_exit_status=False)
+
+    section1 = nodes.section("todo_list_file")
+    doc2_pub.reader.document.append(section1)
+    title1 = nodes.title("TODO LIST", "TODO LIST")
+    doc2_pub.reader.document.append(title1)
+    print doc2_pub.document
+    print "------------------------------------------------------------------"
+    rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
+    for file in rst_files:
+        file_title = False
+        print 'scanning file: %s' % file
+        file_handle = open(file + '.rst', 'r')
+        file_content = file_handle.read()
+        file_handle.close()
+        file_content = file_content.decode('utf-8')
+
+        output, pub = docutils.core.publish_programmatically(
+            source_class=io.StringInput, source=file_content,
+            source_path=None,
+            destination_class=io.StringOutput,
+            destination=None, destination_path=None,
+            reader=None, reader_name='standalone',
+            parser=None, parser_name='restructuredtext',
+            writer=None, writer_name='html',
+            settings=None, settings_spec=None,
+            settings_overrides=None,
+            config_section=None,
+            enable_exit_status=False)
+
+        my_settings = pub.get_settings()
+        parser = docutils.parsers.rst.Parser()
+        document = docutils.utils.new_document('test', my_settings)
+        parser.parse(file_content, document)
+        for node in document.traverse(todo):  # docutils.nodes.todo):  # todo):
+            print "   ...one node"
+            if not file_title:
+                file_title = True
+                section2 = nodes.section(file)
+                doc2_pub.reader.document.append(section2)
+                title2 = nodes.paragraph(file, file)
+                doc2_pub.reader.document.append(title2)
+
+            doc2_pub.reader.document.append(node)
+            #doc2_pub.reader.document.append(node)
+        print doc2_pub.document
+        print "..............................................."
+        doc2_pub.apply_transforms()
+        print doc2_pub.document
+        print "..............................................."
+
+    result =  doc2_pub.writer.write(doc2_pub.document, doc2_pub.destination)  # doc2_pub.publish(enable_exit_status=False)
+    print "##################################################################"
+    print result
+    print "##################################################################"
+    return result
 
 
 def view_cancel_edit(name=None):
@@ -242,6 +326,7 @@ def view_page(name=None):
         else:
             name = index_files[0][2:-4]
     return template('page', name=name, display_name=name, is_repo=check_repo())
+
 
 def view_quick_save_page(name=None):
     """quick save a page
