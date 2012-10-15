@@ -34,92 +34,13 @@ import docutils
 from docutils.core import publish_string, publish_parts
 from docutils.writers.html4css1 import Writer as HisWriter
 from docutils import io, nodes
-from git import Repo, InvalidGitRepositoryError
+
 
 # project imports
-from attowiki.tools import attowiki_distro_path
-from attowiki.rstdirective_todo import todo
+from attowiki.rst_directives import todo
+from attowiki.git_tools import check_repo, commit, \
+                               reset_to_last_commit, add_file_to_repo
 
-
-def check_repo():
-    """checks is local git repo is present or not
-
-    Keywords Arguments:
-        <none>
-
-    Returns:
-        boolean -- True if git repo is present, False if not
-    """
-    try:
-        Repo()
-    except InvalidGitRepositoryError:
-        return False
-    return True
-
-
-def commit(filename):
-    """Commit (git) a specified file
-
-    This method does the same than a ::
-
-        $ git commit -a "message"
-
-    Keyword Arguments:
-        :filename: (str) -- name of the file to commit
-
-    Returns:
-        <nothing>
-    """
-    try:
-        repo = Repo()
-        #gitcmd = repo.git
-        #gitcmd.commit(filename)
-        index = repo.index
-        index.commit("Updated file: {0}".format(filename))
-    except Exception:
-        pass
-
-
-def add_file_to_repo(filename):
-    """Add a file to the git repo
-
-    This method does the same than a ::
-
-        $ git add filename
-
-    Keyword Arguments:
-        :filename: (str) -- name of the file to commit
-
-    Returns:
-        <nothing>
-    """
-    try:
-        repo = Repo()
-        index = repo.index
-        index.add([filename])
-    except Exception:
-        pass
-
-
-def reset_to_last_commit():
-    """reset a modified file to his last commit status
-
-    This method does the same than a ::
-
-        $ git reset --hard
-
-    Keyword Arguments:
-        <none>
-
-    Returns:
-        <nothing>
-    """
-    try:
-        repo = Repo()
-        gitcmd = repo.git
-        gitcmd.reset(hard=True)
-    except Exception:
-        pass
 
 def view_meta_cheat_sheet():
     """Display a cheat sheet of reST syntax

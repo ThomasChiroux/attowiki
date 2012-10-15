@@ -31,10 +31,10 @@ from docutils.parsers.rst import directives
 from docutils import nodes, languages
 
 # project imports
-from attowiki import serve_pages
-from attowiki.rstdirective_todo import add_node
-from attowiki.rstdirective_todo import todo, visit_todo, depart_todo, Todo
-from attowiki.rstdirective_todo import done, visit_done, depart_done, Done
+from attowiki import views
+from attowiki.rst_directives import add_node
+from attowiki.rst_directives import todo, visit_todo, depart_todo, Todo
+from attowiki.rst_directives import done, visit_done, depart_done, Done
 from attowiki.tools import attowiki_distro_path
 
 
@@ -85,29 +85,29 @@ def main():
 
     # All the Urls of the project
     # index or __index__
-    app.route('/', method='GET')(serve_pages.view_page)
+    app.route('/', method='GET')(views.view_page)
     # new page
-    app.route('/', method='POST')(serve_pages.view_page)
+    app.route('/', method='POST')(views.view_page)
     # meta pages
-    app.route('/__index__')(serve_pages.view_meta_index)
-    app.route('/__todo__')(serve_pages.view_meta_todos)
-    app.route('/__cheatsheet__')(serve_pages.view_meta_cheat_sheet)
+    app.route('/__index__')(views.view_meta_index)
+    app.route('/__todo__')(views.view_meta_todos)
+    app.route('/__cheatsheet__')(views.view_meta_cheat_sheet)
 
     # new page
-    app.route('/edit/')(serve_pages.view_edit)
+    app.route('/edit/')(views.view_edit)
     # edit an existing page
-    app.route('/edit/<name>')(serve_pages.view_edit)
+    app.route('/edit/<name>')(views.view_edit)
 
     # cancel the edition of an existing page
-    app.route('/cancel-edit/')(serve_pages.view_cancel_edit)
-    app.route('/cancel-edit/<name>')(serve_pages.view_cancel_edit)
+    app.route('/cancel-edit/')(views.view_cancel_edit)
+    app.route('/cancel-edit/<name>')(views.view_cancel_edit)
 
     # view an existing page
-    app.route('/<name>', method='GET')(serve_pages.view_page)
+    app.route('/<name>', method='GET')(views.view_page)
     # write new content to an existing page
-    app.route('/<name>', method='POST')(serve_pages.view_page)
+    app.route('/<name>', method='POST')(views.view_page)
     # write new content to an existing page (without commit - for quick save)
-    app.route('/<name>', method='PUT')(serve_pages.view_quick_save_page)
+    app.route('/<name>', method='PUT')(views.view_quick_save_page)
 
     # for devt purpose: set bottle in debug mode
     bottle.debug(True)  # this line may be commented in production mode
