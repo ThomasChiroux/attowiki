@@ -121,6 +121,12 @@ def reset_to_last_commit():
     except Exception:
         pass
 
+def view_meta_cheat_sheet():
+    """Display a cheat sheet of reST syntax
+    """
+    response.set_header('Content-Type', 'text')
+    return template('rst_cheat_sheet', name="__cheatsheet__",
+                    display_name="__cheatsheet__", is_repo=True)
 
 def view_meta_index():
     """List all the available .rst files in the directory
@@ -128,6 +134,7 @@ def view_meta_index():
     view_meta_index is called by the 'meta' url : /__index__
     """
     rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
+    rst_files.reverse()
     return template('index', filelist=rst_files, name="__index__")
 
 
@@ -162,6 +169,7 @@ def view_meta_todos():
     print doc2_pub.document
     print "------------------------------------------------------------------"
     rst_files = [filename[2:-4] for filename in glob.glob("./*.rst")]
+    rst_files.reverse()
     for file in rst_files:
         file_title = False
         print 'scanning file: %s' % file

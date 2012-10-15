@@ -75,7 +75,8 @@ def main():
     # new page
     app.route('/', method='POST')(serve_pages.view_page)
 
-    app.route('/__todos__', method='GET')(serve_pages.view_meta_todos)
+    app.route('/__todo__.__iframe__', method='GET')(serve_pages.view_meta_todos)
+    app.route('/__cheatsheet__.__iframe__')(serve_pages.view_meta_cheat_sheet)
 
     app.route('/edit/')(serve_pages.view_edit)
     # edit an existing page
