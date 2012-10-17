@@ -48,27 +48,7 @@
         setTimeout(automatic_quick_save, 10000); // quick save every 10s
     }
 </script>
-<div class="header header_{{type}}">
-    <div class="text">
-%if name is None:
-        [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:
-%else:
-        [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:<a href="/{{name}}">{{name}}</a>
-%end
-    </div>
-%if not is_repo:
-    <span class="warning">WARNING: no git repository found !!</span>
-%end
-    <div class="buttons">
-%if name is None:
-        <a href="/cancel-edit/" id="btn_cancel">cancel</a>
-%else:
-        <a href="/cancel-edit/{{name}}" id="btn_cancel">cancel</a>
-%end
-        <a href="#" id="btn_save" onclick="document.forms['page_edit'].submit();">save</a>
-    </div>
-</div>
-<!--<div class="main_content">-->
+%include header_bar name=name, history=history, gitref=gitref, extended_name=extended_name, is_repo=is_repo, type=type
 
 %if name is None:
         <form name="page_edit" method="post" action="/" class="edit_form">

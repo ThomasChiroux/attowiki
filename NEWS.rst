@@ -4,6 +4,7 @@ Version History
 current
 """""""
 
+* added an history view of previous versions of a file
 * added __todo__ meta page which scan all the directory for todo directives
   and display it in one page
 * added more generic __xxxxxxxx__ meta page which scan all the directory

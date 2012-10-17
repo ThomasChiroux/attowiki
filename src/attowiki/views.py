@@ -51,6 +51,7 @@ def view_meta_cheat_sheet():
     response.set_header('Content-Type', 'text')
     return template('rst_cheat_sheet')
 
+
 def view_meta_index():
     """List all the available .rst files in the directory
 
@@ -62,6 +63,9 @@ def view_meta_index():
                     type="view",
                     filelist=rst_files,
                     name="__index__",
+                    extended_name=None,
+                    history=[],
+                    gitref=None,
                     is_repo=check_repo())
 
 
@@ -188,7 +192,6 @@ def view_meta_admonition(admonition_name, name=None):
                     content=doc2_pub.writer.parts['html_body'])
 
 
-
 def view_cancel_edit(name=None):
     """cancel the edition of an existing page and render the last modification
     status
@@ -233,8 +236,12 @@ def view_edit(name=None):
     if name is None:
         # new page
         return template('edit',
+                        type="edit",
                         name=name,
+                        extended_name=None,
                         is_repo=check_repo(),
+                        history=[],
+                        gitref=None,
                         today=datetime.datetime.now().strftime("%Y%m%d"),
                         content="")
     else:
@@ -244,7 +251,10 @@ def view_edit(name=None):
             return template('edit',
                             type="edit",
                             name=name,
+                            extended_name=None,
                             is_repo=check_repo(),
+                            history=[],
+                            gitref=None,
                             today=datetime.datetime.now().strftime("%Y%m%d"),
                             content=file_handle.read())
         else:
