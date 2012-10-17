@@ -24,6 +24,7 @@ __authors__ = [
     # alphabetical order by last name
     'Thomas Chiroux', ]
 
+from datetime import datetime
 
 from git import Repo, InvalidGitRepositoryError
 
@@ -107,3 +108,40 @@ def reset_to_last_commit():
         gitcmd.reset(hard=True)
     except Exception:
         pass
+
+
+def commit_history(filename):
+    """retrieve the commit history for a give filename
+
+    Keyword Arguments:
+        :filename: (str) -- full name of the file
+
+    Returns:
+        list of dicts -- list of commit
+                if the file is not found, returns an empty list
+    """
+    result = []
+    repo = Repo()
+    for commit in repo.head.commit.iter_parents(paths=filename):
+        result.append({'date' :
+                           datetime.fromtimestamp(commit.committed_date +
+                                                  commit.committer_tz_offset),
+                       'hexsha' : commit.hexsha})
+    return result
+
+def read_committed_file(gitref, filename):
+    """retrieves the content of a file in an old commit and returns it
+
+    Ketword Arguments:
+        :gitref: (str) -- full reference of the git commit
+        :filename: (str) -- name (full path) of the file
+
+    Returns:
+        str -- content of the file
+    """
+    repo = Repo()
+    commitobj = repo.commit(gitref)
+    blob = commitobj.tree[filename]
+    return blob.data_stream.read()
+
+

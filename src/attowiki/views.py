@@ -38,8 +38,11 @@ from docutils import io, nodes
 
 # project imports
 from attowiki.rst_directives import todo, done
-from attowiki.git_tools import check_repo, commit, \
-                               reset_to_last_commit, add_file_to_repo
+from attowiki.git_tools import (check_repo, commit,
+                                reset_to_last_commit,
+                                add_file_to_repo,
+                                commit_history,
+                                read_committed_file)
 
 
 def view_meta_cheat_sheet():
@@ -56,6 +59,7 @@ def view_meta_index():
     rst_files = [filename[2:-4] for filename in sorted(glob.glob("./*.rst"))]
     rst_files.reverse()
     return template('index',
+                    type="view",
                     filelist=rst_files,
                     name="__index__",
                     is_repo=check_repo())
@@ -175,9 +179,12 @@ def view_meta_admonition(admonition_name, name=None):
         display_file_name = '{0}'.format(name)
         extended_name = '__{0}__'.format(admonition_name)
     return template('page',
+                    type="view",
                     name=display_file_name,
                     extended_name=extended_name,
                     is_repo=check_repo(),
+                    history=[],
+                    gitref=None,
                     content=doc2_pub.writer.parts['html_body'])
 
 
@@ -235,6 +242,7 @@ def view_edit(name=None):
         if len(files) > 0:
             file_handle = open(files[0], 'r')
             return template('edit',
+                            type="edit",
                             name=name,
                             is_repo=check_repo(),
                             today=datetime.datetime.now().strftime("%Y%m%d"),
@@ -254,10 +262,6 @@ def view_page(name=None):
 
     * if the view is called with the GET method, directly display the html
       rendering of the restructured text file
-
-    This view dot not render the .rst file directly: it display a small
-    header at the top of the page and an iframe below which is directed
-    to a meta page : name.__iframe__ (see :func:`view_iframe` for more infos)
 
     Keyword Arguments:
         :name: (str) -- name of the rest file (without the .rst extension)
@@ -302,10 +306,48 @@ def view_page(name=None):
                                    writer=HisWriter(),
                                    settings=None,
                                    settings_overrides=None)['html_body']
+        history = commit_history("{0}.rst".format(name))
         return template('page',
+                        type="view",
                         name=name,
                         extended_name=None,
                         is_repo=check_repo(),
+                        history=history,
+                        gitref=None,
+                        content=html_body)
+    else:
+        return abort(404)
+
+def view_history(name, gitref):
+    """serve a page name from git repo (an old version of a page)
+
+    .. note:: this is a bottle view
+
+    * this is a GET only method : you can not change a committed page
+
+    Keyword Arguments:
+        :name: (str) -- name of the rest file (without the .rst extension)
+        :gitref: (str) -- hexsha of the git commit to look into
+
+    Returns:
+        bottle response object or 404 error page
+    """
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    content = read_committed_file(gitref, name + '.rst')
+    if content:
+        html_body = publish_parts(content,
+                                  writer=HisWriter(),
+                                  settings=None,
+                                  settings_overrides=None)['html_body']
+        history = commit_history(name + '.rst')
+        return template('page',
+                        type="history",
+                        name=name,
+                        extended_name=None,
+                        is_repo=check_repo(),
+                        history=history,
+                        gitref=gitref,
                         content=html_body)
     else:
         return abort(404)

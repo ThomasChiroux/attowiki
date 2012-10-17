@@ -74,10 +74,12 @@ class Todo(BaseAdmonition):
 
     uses BaseAdmonition from docutils (like .. note:: of .. warning:: etc..)
     """
+    optional_arguments = 0
     node_class = todo
 
+
 class done(nodes.Admonition, nodes.Element):
-    """todo node for docutils"""
+    """done node for docutils"""
     pass
 
 
@@ -90,8 +92,9 @@ def depart_done(self, node):
 
 
 class Done(BaseAdmonition):
-    """todo directive for docutils
+    """done directive for docutils
 
     uses BaseAdmonition from docutils (like .. note:: of .. warning:: etc..)
     """
+    optional_arguments = 0
     node_class = done

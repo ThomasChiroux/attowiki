@@ -1,6 +1,6 @@
 %include header name=name
 <body>
-<div class="header header_view">
+<div class="header header_{{type}}">
     <div class="text">
         [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:<a href="/{{name}}">{{name}}</a>
     </div>

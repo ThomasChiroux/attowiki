@@ -40,6 +40,10 @@
             background-color: #6cb3ff;
         }
 
+        .header_history {
+            background-color: #b2b2b2;
+        }
+
         .header .text {
             padding-top:2px;
             padding-left:4px;
@@ -76,25 +80,45 @@
             color:#0000ff;
         }
 
-        #btn_new {
+        .header div.history {
+            position:absolute;
+            right:160px;
+            top:2px;
+        }
+
+        .header div.history #history {
+            background-color:#ededed;
+            -moz-border-radius:6px;
+            -webkit-border-radius:6px;
+            border-radius:6px;
+            border:1px solid #dcdcdc;
+            display:inline-block;
+            color:#777777;
+            font-size:10px;
+            padding:0px 5px;
+            height: 15px;
+            text-decoration:none;
+        }
+
+        .header #btn_new {
             position:absolute;
             right:60px;
             top:2px;
         }
 
-        #btn_edit {
+        .header #btn_edit {
             position:absolute;
             right:5px;
             top:2px;
         }
 
-        #btn_cancel {
+        .header #btn_cancel {
             position:absolute;
             right:60px;
             top:2px;
         }
 
-        #btn_save {
+        .header #btn_save {
             position:absolute;
             right:5px;
             top:2px;
@@ -120,7 +144,7 @@
             bottom: 0;
             right:0;
             overflow: hidden;
-            height: 100%;
+            height: 95%;
             width: 100%;
 
         }

@@ -48,7 +48,7 @@
         setTimeout(automatic_quick_save, 10000); // quick save every 10s
     }
 </script>
-<div class="header header_edit">
+<div class="header header_{{type}}">
     <div class="text">
 %if name is None:
         [<a href="/__index__">i</a>]:<a href="/">attowiki</a>:
