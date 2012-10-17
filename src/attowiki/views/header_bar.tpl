@@ -20,12 +20,36 @@
     %if len(history) > 0:
         <div class="buttons">
             %if gitref is not None:
-                <a href="/__history__/{{gitref}}/{{name}}.__source__"  target="_blank" id="btn_source">S</a>
+                %if extended_name is not None:
+                    <a href="/__history__/{{gitref}}/{{name}}" id="btn_html">H</a>
+                    %if extended_name != '__diff__':
+                        <a href="/__history__/{{gitref}}/{{name}}.__diff__" id="btn_diff">D</a>
+                    %end
+                    %if extended_name != '__source__':
+                    <a href="/__history__/{{gitref}}/{{name}}.__source__"  id="btn_source">S</a>
+                    %end
+                %else:
+                    <a href="/__history__/{{gitref}}/{{name}}.__diff__" id="btn_diff">D</a>
+                    <a href="/__history__/{{gitref}}/{{name}}.__source__"  id="btn_source">S</a>
+                %end
+            %else:
+                %if extended_name is not None:
+                    <a href="/{{name}}" id="btn_html">H</a>
+                %else:
+                    <a href="/{{name}}.__source__"  id="btn_source">S</a>
+                %end
             %end
         </div>
         <div class="history">
-            <select name="history" id="history" onchange="window.location.assign(this.value+'/{{name}}')">
+            <select name="history" id="history"
+                %if extended_name is None:
+                onchange="window.location.assign(this.value+'/{{name}}')">
                 <option value="">--- current version ---</option>
+                %else:
+                onchange="window.location.assign(this.value+'/{{name}}.{{extended_name}}')">
+                %end
+
+
                 %for element in history:
                     <option value="/__history__/{{element['hexsha']}}"
                     %if gitref == element['hexsha']:

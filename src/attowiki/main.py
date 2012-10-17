@@ -92,6 +92,7 @@ def main():
     app.route('/__index__')(views.view_meta_index)
     app.route('/__cheatsheet__')(views.view_meta_cheat_sheet)
     app.route('/__history__/<gitref>/<name>.__source__')(views.view_history_source)
+    app.route('/__history__/<gitref>/<name>.__diff__')(views.view_history_diff)
     app.route('/__history__/<gitref>/<name>')(views.view_history)
     app.route('/__<admonition_name>__')(views.view_meta_admonition)
 
@@ -105,6 +106,8 @@ def main():
     app.route('/cancel-edit/<name>')(views.view_cancel_edit)
 
     # meta page for one single document
+    app.route('/<name>.__source__')(views.view_history_source)
+    app.route('/<name>.__diff__')(views.view_history_diff)
     app.route('/<name>.__<admonition_name>__')(views.view_meta_admonition)
     # view an existing page
     app.route('/<name>', method='GET')(views.view_page)

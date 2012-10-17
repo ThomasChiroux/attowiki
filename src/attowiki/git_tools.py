@@ -144,4 +144,3 @@ def read_committed_file(gitref, filename):
     blob = commitobj.tree[filename]
     return blob.data_stream.read()
 
-

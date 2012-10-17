@@ -27,6 +27,8 @@ __authors__ = [
 
 import glob
 import datetime
+import difflib
+
 
 # dependencies imports
 from bottle import request, response, template, abort, redirect
@@ -363,7 +365,7 @@ def view_history(name, gitref):
         return abort(404)
 
 
-def view_history_source(name, gitref):
+def view_history_source(name, gitref=None):
     """serve a page name from git repo (an old version of a page)
        and return the reST source code
 
@@ -382,14 +384,72 @@ def view_history_source(name, gitref):
     """
     response.set_header('Cache-control', 'no-cache')
     response.set_header('Pragma', 'no-cache')
-    content = read_committed_file(gitref, name + '.rst')
+    response.set_header('Content-Type', 'text/html; charset=utf-8')
+    if gitref is None:
+        files = glob.glob("{0}.rst".format(name))
+        if len(files) > 0:
+            file_handle = open(files[0], 'r')
+            content = file_handle.read()
+        else:
+            return abort(404)
+    else:
+        content = read_committed_file(gitref, name + '.rst')
     if content:
-        response.set_header('Content-Type', 'text/plain; charset=utf-8')
-        print type(content)
-        print type(content.decode('utf-8'))
-        return content.decode('utf-8')
+        return template('source_view',
+                        type="history",
+                        name=name,
+                        extended_name='__source__',
+                        is_repo=check_repo(),
+                        history=commit_history("{0}.rst".format(name)),
+                        gitref=gitref,
+                        content=content.decode('utf-8'))
     else:
         return abort(404)
+
+
+def view_history_diff(name, gitref):
+    """serve a page name from git repo (an old version of a page)
+       and return the diff between current source and the old commited source
+
+       This function does not use any template it returns only plain text
+
+    .. note:: this is a bottle view
+
+    * this is a GET only method : you can not change a committed page
+
+    Keyword Arguments:
+        :name: (str) -- name of the rest file (without the .rst extension)
+        :gitref: (str) -- hexsha of the git commit to look into
+
+    Returns:
+        bottle response object or 404 error page
+    """
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    response.set_header('Content-Type', 'text/html; charset=utf-8')
+    old_content = read_committed_file(gitref, name + '.rst')
+    if old_content:
+        old_content = old_content.decode('utf-8')
+        files = glob.glob("{0}.rst".format(name))
+        if len(files) > 0:
+            file_handle = open(files[0], 'r')
+            current_content = file_handle.read().decode('utf-8')
+            differ = difflib.Differ()
+            result = list(differ.compare(old_content.splitlines(),
+                                         current_content.splitlines()))
+            return template('diff_view',
+                            type="history",
+                            name=name,
+                            extended_name='__diff__',
+                            is_repo=check_repo(),
+                            history=commit_history("{0}.rst".format(name)),
+                            gitref=gitref,
+                            content=result)
+        else:
+            return abort(404)
+    else:
+        return abort(404)
+
 
 def view_quick_save_page(name=None):
     """quick save a page

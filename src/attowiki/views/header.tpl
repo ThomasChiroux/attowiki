@@ -124,9 +124,23 @@
             top:2px;
         }
 
+        .header #btn_html {
+            position:absolute;
+            right:323px;
+            top:2px;
+            padding:2px 5px;
+        }
+
         .header #btn_source {
             position:absolute;
             right:283px;
+            top:2px;
+            padding:2px 5px;
+        }
+
+        .header #btn_diff {
+            position:absolute;
+            right:303px;
             top:2px;
             padding:2px 5px;
         }
@@ -166,6 +180,41 @@
             /*height:100%;
             width:100%;*/
         }
+
+        div.view_source {
+            font-family: "Consolas", "Monaco", "Lucida Console", "Liberation Mono", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+            font-size: 10px;
+            margin:2px;
+            padding:0;
+            white-space: nowrap;
+        }
+
+        div.view_diff {
+            font-family: "Consolas", "Monaco", "Lucida Console", "Liberation Mono", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+            font-size: 10px;
+            margin:2px;
+            padding:0;
+            white-space: nowrap;
+        }
+
+        div.view_diff p.add {
+            color:green;
+            margin:0;
+        }
+
+        div.view_diff p.sub {
+            color:red;
+            margin:0;
+        }
+
+        div.view_diff p.detail {
+            color: #000000;
+            margin:0;
+        }
+
+        div.view_diff p.unchanged {
+            color:gray;
+            margin:0;
         }
     </style>
     <script type="text/javascript">

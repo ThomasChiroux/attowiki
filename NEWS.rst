@@ -4,6 +4,8 @@ Version History
 current
 """""""
 
+* added a 'view diff' button when viewing a previous version of a file
+* added a 'view source' button when viewing a previous version of a file
 * added an history view of previous versions of a file
 * added __todo__ meta page which scan all the directory for todo directives
   and display it in one page
