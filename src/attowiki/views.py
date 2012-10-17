@@ -48,7 +48,7 @@ from attowiki.git_tools import (check_repo, commit,
 def view_meta_cheat_sheet():
     """Display a cheat sheet of reST syntax
     """
-    response.set_header('Content-Type', 'text')
+    response.set_header('Content-Type', 'text/plain')
     return template('rst_cheat_sheet')
 
 
@@ -362,6 +362,34 @@ def view_history(name, gitref):
     else:
         return abort(404)
 
+
+def view_history_source(name, gitref):
+    """serve a page name from git repo (an old version of a page)
+       and return the reST source code
+
+       This function does not use any template it returns only plain text
+
+    .. note:: this is a bottle view
+
+    * this is a GET only method : you can not change a committed page
+
+    Keyword Arguments:
+        :name: (str) -- name of the rest file (without the .rst extension)
+        :gitref: (str) -- hexsha of the git commit to look into
+
+    Returns:
+        bottle response object or 404 error page
+    """
+    response.set_header('Cache-control', 'no-cache')
+    response.set_header('Pragma', 'no-cache')
+    content = read_committed_file(gitref, name + '.rst')
+    if content:
+        response.set_header('Content-Type', 'text/plain; charset=utf-8')
+        print type(content)
+        print type(content.decode('utf-8'))
+        return content.decode('utf-8')
+    else:
+        return abort(404)
 
 def view_quick_save_page(name=None):
     """quick save a page

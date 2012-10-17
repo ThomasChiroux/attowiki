@@ -18,6 +18,11 @@
         <span class="warning">WARNING: no git repository found !!</span>
     %end
     %if len(history) > 0:
+        <div class="buttons">
+            %if gitref is not None:
+                <a href="/__history__/{{gitref}}/{{name}}.__source__"  target="_blank" id="btn_source">S</a>
+            %end
+        </div>
         <div class="history">
             <select name="history" id="history" onchange="window.location.assign(this.value+'/{{name}}')">
                 <option value="">--- current version ---</option>

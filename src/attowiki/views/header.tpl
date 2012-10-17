@@ -82,7 +82,7 @@
 
         .header div.history {
             position:absolute;
-            right:160px;
+            right:140px;
             top:2px;
         }
 
@@ -96,7 +96,7 @@
             color:#777777;
             font-size:10px;
             padding:0px 5px;
-            height: 15px;
+            height: 16px;
             text-decoration:none;
         }
 
@@ -122,6 +122,13 @@
             position:absolute;
             right:5px;
             top:2px;
+        }
+
+        .header #btn_source {
+            position:absolute;
+            right:283px;
+            top:2px;
+            padding:2px 5px;
         }
 
         a#btn_save.saving {
