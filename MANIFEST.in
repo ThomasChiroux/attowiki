@@ -2,4 +2,3 @@ include *.rst
 include build_scripts/*.py
 include src/attowiki/RELEASE-VERSION
 include src/attowiki/views/*.tpl
-include src/attowiki/views/*.css

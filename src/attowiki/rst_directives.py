@@ -38,17 +38,9 @@ def add_node(node, **kwds):
             raise ValueError('Value for key %r must be a '
                                  '(visit, depart) function tuple' % key)
         if key == 'html':
-            from sphinx.writers.html import HTMLTranslator as translator
+            from docutils.writers.html4css1 import HTMLTranslator as translator
         elif key == 'latex':
-            from sphinx.writers.latex import LaTeXTranslator as translator
-        elif key == 'text':
-            from sphinx.writers.text import TextTranslator as translator
-        elif key == 'man':
-            from sphinx.writers.manpage import ManualPageTranslator\
-            as translator
-        elif key == 'texinfo':
-            from sphinx.writers.texinfo import TexinfoTranslator\
-            as translator
+            from docutils.writers.latex2e import LaTeXTranslator as translator
         else:
             # ignore invalid keys for compatibility
             continue
