@@ -25,6 +25,7 @@ __authors__ = [
     'Thomas Chiroux', ]
 
 from datetime import datetime
+import os
 
 from git import Repo, InvalidGitRepositoryError
 
@@ -64,7 +65,7 @@ def commit(filename):
         #gitcmd.commit(filename)
         index = repo.index
         index.commit("Updated file: {0}".format(filename))
-    except Exception:
+    except Exception as e:
         pass
 
 
@@ -122,7 +123,12 @@ def commit_history(filename):
     """
     result = []
     repo = Repo()
-    for commit in repo.head.commit.iter_parents(paths=filename):
+    # looks if current path is not main path of the git repo
+    current_dir = os.getcwd()
+    repo_dir = repo.tree().abspath
+    delta_dir = current_dir.replace(repo_dir,'')
+    for commit in repo.head.commit.iter_parents(paths=delta_dir[1:] + '/' + filename):
+        print "append..."
         result.append({'date' :
                            datetime.fromtimestamp(commit.committed_date +
                                                   commit.committer_tz_offset),
@@ -141,6 +147,10 @@ def read_committed_file(gitref, filename):
     """
     repo = Repo()
     commitobj = repo.commit(gitref)
-    blob = commitobj.tree[filename]
+    current_dir = os.getcwd()
+    repo_dir = repo.tree().abspath
+    delta_dir = current_dir.replace(repo_dir,'')
+
+    blob = commitobj.tree[delta_dir[1:] + '/' +filename]
     return blob.data_stream.read()
 
