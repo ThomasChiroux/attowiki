@@ -31,7 +31,7 @@ import difflib
 
 
 # dependencies imports
-from bottle import request, response, template, abort, redirect
+from bottle import request, response, template, abort, redirect, static_file
 import docutils
 from docutils.core import publish_string, publish_parts
 from docutils.writers.html4css1 import Writer as HisWriter
@@ -328,7 +328,7 @@ def view_page(name=None):
                         gitref=None,
                         content=html_body)
     else:
-        return abort(404)
+        return static_file(name, '')
 
 def view_history(name, gitref):
     """serve a page name from git repo (an old version of a page)
