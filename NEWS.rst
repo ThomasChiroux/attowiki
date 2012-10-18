@@ -1,6 +1,17 @@
 Version History
 ---------------
 
+current
+"""""""
+
+* added static file serving as fall back (and 404 still fall back of static files-
+  It's useful when a reST doc tries to include local files (like images), which
+  are now server by attowiki
+
+* Bug Corrections
+
+  * git history was not available when serving attowiki in a subdir of a git repo
+
 v0.4
 """"
 
