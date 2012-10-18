@@ -1,8 +1,8 @@
 Version History
 ---------------
 
-current
-"""""""
+v0.4
+""""
 
 * added a 'view diff' button when viewing a previous version of a file
 * added a 'view source' button when viewing a previous version of a file
