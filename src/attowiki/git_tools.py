@@ -66,7 +66,8 @@ def commit(filename):
         index = repo.index
         index.commit("Updated file: {0}".format(filename))
     except Exception as e:
-        pass
+        print "exception while commit: %s" % e.message
+        #pass
 
 
 def add_file_to_repo(filename):
@@ -85,9 +86,14 @@ def add_file_to_repo(filename):
     try:
         repo = Repo()
         index = repo.index
-        index.add([filename])
-    except Exception:
-        pass
+        # looks if current path is not main path of the git repo
+        current_dir = os.getcwd()
+        repo_dir = repo.tree().abspath
+        delta_dir = current_dir.replace(repo_dir,'')
+        index.add([delta_dir[1:] + '/' + filename])
+    except Exception as e:
+        print "exception while gitadding file: %s" % e.message
+        #pass
 
 
 def reset_to_last_commit():
@@ -128,7 +134,6 @@ def commit_history(filename):
     repo_dir = repo.tree().abspath
     delta_dir = current_dir.replace(repo_dir,'')
     for commit in repo.head.commit.iter_parents(paths=delta_dir[1:] + '/' + filename):
-        print "append..."
         result.append({'date' :
                            datetime.fromtimestamp(commit.committed_date +
                                                   commit.committer_tz_offset),
