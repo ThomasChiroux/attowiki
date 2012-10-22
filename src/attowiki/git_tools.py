@@ -30,6 +30,29 @@ import os
 from git import Repo, InvalidGitRepositoryError
 
 
+def _delta_dir():
+    """returns the relative path of the current directory to the git
+    repository.
+    This path will be added the 'filename' path to find the file.
+    It current_dir is the git root, this function returns an empty string.
+
+    Keyword Arguments:
+        <none>
+
+    Returns:
+        str -- relative path of the current dir to git root dir
+               empty string if current dir is the git root dir
+    """
+    repo = Repo()
+    current_dir = os.getcwd()
+    repo_dir = repo.tree().abspath
+    delta_dir = current_dir.replace(repo_dir,'')
+    if delta_dir:
+        return delta_dir +'/'
+    else:
+        return ''
+
+
 def check_repo():
     """checks is local git repo is present or not
 
@@ -86,14 +109,9 @@ def add_file_to_repo(filename):
     try:
         repo = Repo()
         index = repo.index
-        # looks if current path is not main path of the git repo
-        current_dir = os.getcwd()
-        repo_dir = repo.tree().abspath
-        delta_dir = current_dir.replace(repo_dir,'')
-        index.add([delta_dir[1:] + '/' + filename])
+        index.add([_delta_dir() + filename])
     except Exception as e:
         print "exception while gitadding file: %s" % e.message
-        #pass
 
 
 def reset_to_last_commit():
@@ -129,11 +147,7 @@ def commit_history(filename):
     """
     result = []
     repo = Repo()
-    # looks if current path is not main path of the git repo
-    current_dir = os.getcwd()
-    repo_dir = repo.tree().abspath
-    delta_dir = current_dir.replace(repo_dir,'')
-    for commit in repo.head.commit.iter_parents(paths=delta_dir[1:] + '/' + filename):
+    for commit in repo.head.commit.iter_parents(paths=_delta_dir() + filename):
         result.append({'date' :
                            datetime.fromtimestamp(commit.committed_date +
                                                   commit.committer_tz_offset),
@@ -152,10 +166,7 @@ def read_committed_file(gitref, filename):
     """
     repo = Repo()
     commitobj = repo.commit(gitref)
-    current_dir = os.getcwd()
-    repo_dir = repo.tree().abspath
-    delta_dir = current_dir.replace(repo_dir,'')
 
-    blob = commitobj.tree[delta_dir[1:] + '/' +filename]
+    blob = commitobj.tree[_delta_dir() + filename]
     return blob.data_stream.read()
 
