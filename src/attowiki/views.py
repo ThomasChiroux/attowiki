@@ -33,7 +33,7 @@ import difflib
 # dependencies imports
 from bottle import request, response, template, abort, redirect, static_file
 import docutils
-from docutils.core import publish_string, publish_parts
+from docutils.core import publish_parts
 from docutils.writers.html4css1 import Writer as HisWriter
 from docutils import io, nodes
 
@@ -101,7 +101,7 @@ def view_meta_admonition(admonition_name, name=None):
     else:
         return abort(404)
 
-    doc2_content=""
+    doc2_content = ""
 
     doc2_output, doc2_pub = docutils.core.publish_programmatically(
                                 source_class=io.StringInput,
@@ -162,10 +162,10 @@ def view_meta_admonition(admonition_name, name=None):
                 paragraph = nodes.paragraph()
                 file_target = nodes.target(ids=[file],
                                            names=[file],
-                                           refuri="/"+file)
+                                           refuri="/" + file)
                 file_ref = nodes.reference(file, file,
                                            name=file,
-                                           refuri="/"+file)
+                                           refuri="/" + file)
                 paragraph.append(nodes.Text("in "))
                 paragraph.append(file_ref)
                 paragraph.append(file_target)
@@ -215,7 +215,7 @@ def view_cancel_edit(name=None):
         files = glob.glob("{0}.rst".format(name))
         if len(files) > 0:
             reset_to_last_commit()
-            return redirect('/'+name)
+            return redirect('/' + name)
         else:
             return abort(404)
 
@@ -315,9 +315,9 @@ def view_page(name=None):
     if len(files) > 0:
         file_handle = open(files[0], 'r')
         html_body = publish_parts(file_handle.read(),
-                                   writer=HisWriter(),
-                                   settings=None,
-                                   settings_overrides=None)['html_body']
+                                  writer=HisWriter(),
+                                  settings=None,
+                                  settings_overrides=None)['html_body']
         history = commit_history("{0}.rst".format(name))
         return template('page',
                         type="view",
@@ -329,6 +329,7 @@ def view_page(name=None):
                         content=html_body)
     else:
         return static_file(name, '')
+
 
 def view_history(name, gitref):
     """serve a page name from git repo (an old version of a page)
