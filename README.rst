@@ -9,6 +9,7 @@ Its main features are:
 * uses all .rst files in directory structure as "wiki" files
 * uses git for revision control
 * automatic background saving
+* pdf generation
 * history view of old version of pages, including source and diff views
 * added 2 new directives: 'todo' and 'done'
 * some meta pages, including:
@@ -68,4 +69,4 @@ project dependencies
 * bottle
 * docutils
 * gitpython
-
+* rst2pdf
