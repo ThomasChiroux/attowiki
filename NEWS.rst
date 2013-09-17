@@ -1,8 +1,17 @@
 Version History
 ---------------
 
-current
-"""""""
+v0.5.1
+""""""
+
+* Bug Corrections
+
+  * changed error handling when pdf production fail
+
+v0.5
+""""
+
+* added pdf export button
 
 * added static file serving as fall back (and 404 still fall back of static files-
   It's useful when a reST doc tries to include local files (like images), which

@@ -288,13 +288,12 @@ def view_pdf(name=None):
                         filename=dest_filename)
         except:
             raise
-            #return redirect(name)
         else:
             return static_file(dest_filename,
                                root='',
                                download=True)
     else:
-        return redirect(name)
+        return abort(404)
 
 
 def view_page(name=None):
