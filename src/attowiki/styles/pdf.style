@@ -1,0 +1,12 @@
+  styles:
+    todo:
+      parent: admonition
+
+    todo-heading:
+      parent: admonition-heading
+
+    done:
+      parent: admonition
+
+    done-heading:
+      parent: admonition-heading

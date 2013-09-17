@@ -25,6 +25,7 @@ __authors__ = [
     'Thomas Chiroux', ]
 
 
+import os
 import glob
 import datetime
 import difflib
@@ -33,7 +34,7 @@ import difflib
 # dependencies imports
 from bottle import request, response, template, abort, redirect, static_file
 import docutils
-from docutils.core import publish_parts
+from docutils.core import publish_parts, publish_doctree
 from docutils.writers.html4css1 import Writer as HisWriter
 from docutils import io, nodes
 
@@ -45,6 +46,7 @@ from attowiki.git_tools import (check_repo, commit,
                                 add_file_to_repo,
                                 commit_history,
                                 read_committed_file)
+from attowiki.pdf import produce_pdf
 
 
 def view_meta_cheat_sheet():
@@ -89,7 +91,7 @@ def view_meta_admonition(admonition_name, name=None):
 
         :admonition_name: (str) -- name of the admonition
     """
-    print "meta admo: %s - %s" % (admonition_name, name)
+    print("meta admo: %s - %s" % (admonition_name, name))
     admonition = None
 
     if admonition_name == 'todo':
@@ -104,18 +106,18 @@ def view_meta_admonition(admonition_name, name=None):
     doc2_content = ""
 
     doc2_output, doc2_pub = docutils.core.publish_programmatically(
-                                source_class=io.StringInput,
-                                source=doc2_content,
-                                source_path=None,
-                                destination_class=io.StringOutput,
-                                destination=None, destination_path=None,
-                                reader=None, reader_name='standalone',
-                                parser=None, parser_name='restructuredtext',
-                                writer=HisWriter(), writer_name=None,
-                                settings=None, settings_spec=None,
-                                settings_overrides=None,
-                                config_section=None,
-                                enable_exit_status=False)
+        source_class=io.StringInput,
+        source=doc2_content,
+        source_path=None,
+        destination_class=io.StringOutput,
+        destination=None, destination_path=None,
+        reader=None, reader_name='standalone',
+        parser=None, parser_name='restructuredtext',
+        writer=HisWriter(), writer_name=None,
+        settings=None, settings_spec=None,
+        settings_overrides=None,
+        config_section=None,
+        enable_exit_status=False)
 
     section1 = nodes.section("{0}_list_file".format(admonition_name))
     doc2_pub.reader.document.append(section1)
@@ -123,7 +125,8 @@ def view_meta_admonition(admonition_name, name=None):
                          "{0} LIST".format(admonition_name.upper()))
     doc2_pub.reader.document.append(title1)
     if name is None:
-        rst_files = [filename[2:-4] for filename in sorted(glob.glob("./*.rst"))]
+        rst_files = [filename[2:-4] for filename in sorted(
+            glob.glob("./*.rst"))]
         rst_files.reverse()
     else:
         rst_files = [filename[2:-4] for filename in
@@ -261,6 +264,37 @@ def view_edit(name=None):
                             content=file_handle.read())
         else:
             return abort(404)
+
+
+def view_pdf(name=None):
+    """render a pdf file based on the given page
+
+    .. note:: this is a bottle view
+
+    Keyword Arguments:
+        :name: (str) -- name of the rest file (without the .rst extension)
+                        MANDATORY
+    """
+    if name is None:
+        return view_meta_index()
+
+    files = glob.glob("{0}.rst".format(name))
+    if len(files) > 0:
+        file_handle = open(files[0], 'r')
+        dest_filename = name + '.pdf'
+        doctree = publish_doctree(file_handle.read())
+        try:
+            produce_pdf(doctree_content=doctree,
+                        filename=dest_filename)
+        except:
+            raise
+            #return redirect(name)
+        else:
+            return static_file(dest_filename,
+                               root='',
+                               download=True)
+    else:
+        return redirect(name)
 
 
 def view_page(name=None):

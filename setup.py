@@ -87,15 +87,13 @@ class my_build_py(build_py):
 
 
 install_requires = [
-    # List your project dependencies here.
-    # For more details, see:
-    # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
     'bottle',
     'docutils',
-    'gitpython',]
+    'gitpython',
+    'rst2pdf', ]
 
 try:
-    import argparse # NOQA
+    import argparse
 except ImportError:
     install_requires.append('argparse')
 
@@ -131,5 +129,5 @@ setup(name='attowiki',
       test_suite = 'nose.collector',
       extras_require = {
           'doc':  ["sphinx", ],
-          'devel_tools':  ["ipython", "pylint", "pep8", "flake8",],
+          'devel_tools':  ["ipython", "pylint", "pep8", "flake8", ],
       },)

@@ -74,7 +74,9 @@
             <a href="/edit/" id="btn_new">new page</a>
             %if not name.startswith('__') and gitref is None:
                 <a href="/edit/{{name}}" id="btn_edit">edit</a>
+                <a href="/pdf/{{name}}" id="btn_pdf">pdf</a>
             %end
+
         %end
     </div>
 </div>

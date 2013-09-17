@@ -82,7 +82,7 @@
 
         .header div.history {
             position:absolute;
-            right:140px;
+            right:180px;
             top:2px;
         }
 
@@ -100,47 +100,53 @@
             text-decoration:none;
         }
 
-        .header #btn_new {
+        .header #btn_pdf {
             position:absolute;
-            right:60px;
+            right:5px;
             top:2px;
         }
 
         .header #btn_edit {
             position:absolute;
-            right:5px;
-            top:2px;
-        }
-
-        .header #btn_cancel {
-            position:absolute;
-            right:60px;
+            right:50px;
             top:2px;
         }
 
         .header #btn_save {
             position:absolute;
-            right:5px;
+            right:50px;
+            top:2px;
+        }
+
+        .header #btn_new {
+            position:absolute;
+            right:100px;
+            top:2px;
+        }
+
+        .header #btn_cancel {
+            position:absolute;
+            right:100px;
             top:2px;
         }
 
         .header #btn_html {
             position:absolute;
-            right:323px;
+            right:363px;
             top:2px;
             padding:2px 5px;
         }
 
         .header #btn_source {
             position:absolute;
-            right:283px;
+            right:323px;
             top:2px;
             padding:2px 5px;
         }
 
         .header #btn_diff {
             position:absolute;
-            right:303px;
+            right:343px;
             top:2px;
             padding:2px 5px;
         }
@@ -153,7 +159,7 @@
         .header .warning {
             position:absolute;
             top:3px;
-            right:150px;
+            right:190px;
             color:darkred;
             font-weight:bold;
         }
