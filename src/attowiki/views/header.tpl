@@ -24,6 +24,10 @@
         }
 
         .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
             width: 100%;
             height: 20px;
             font-family: "Consolas", "Monaco", "Lucida Console", "Liberation Mono", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
@@ -165,8 +169,8 @@
         }
 
         form.edit_form {
-            /*position: absolute;*/
-            top: 0;
+            position: absolute;
+            top: 20px;
             left: 0;
             bottom: 0;
             right:0;
