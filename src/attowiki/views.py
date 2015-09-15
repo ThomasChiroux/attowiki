@@ -35,7 +35,8 @@ import difflib
 from bottle import request, response, template, abort, redirect, static_file
 import docutils
 from docutils.core import publish_parts, publish_doctree
-from docutils.writers.html4css1 import Writer as HisWriter
+# from docutils.writers.html4css1 import Writer as HisWriter
+from writer import AttowikiWriter
 from docutils import io, nodes
 
 
@@ -113,7 +114,7 @@ def view_meta_admonition(admonition_name, name=None):
         destination=None, destination_path=None,
         reader=None, reader_name='standalone',
         parser=None, parser_name='restructuredtext',
-        writer=HisWriter(), writer_name=None,
+        writer=AttowikiWriter(), writer_name=None,
         settings=None, settings_spec=None,
         settings_overrides=None,
         config_section=None,
@@ -348,7 +349,7 @@ def view_page(name=None):
     if len(files) > 0:
         file_handle = open(files[0], 'r')
         html_body = publish_parts(file_handle.read(),
-                                  writer=HisWriter(),
+                                  writer=AttowikiWriter(),
                                   settings=None,
                                   settings_overrides=None)['html_body']
         history = commit_history("{0}.rst".format(name))
@@ -383,7 +384,7 @@ def view_history(name, gitref):
     content = read_committed_file(gitref, name + '.rst')
     if content:
         html_body = publish_parts(content,
-                                  writer=HisWriter(),
+                                  writer=AttowikiWriter(),
                                   settings=None,
                                   settings_overrides=None)['html_body']
         history = commit_history(name + '.rst')
