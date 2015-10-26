@@ -24,14 +24,15 @@ __authors__ = [
     # alphabetical order by last name
     'Thomas Chiroux', ]
 
-
-import os
 import glob
 import datetime
 import difflib
 
+import time  # for profiling
+
 
 # dependencies imports
+from bottle import auth_basic
 from bottle import request, response, template, abort, redirect, static_file
 import docutils
 from docutils.core import publish_parts, publish_doctree
@@ -41,6 +42,7 @@ from docutils import io, nodes
 
 
 # project imports
+import attowiki
 from attowiki.rst_directives import todo, done
 from attowiki.git_tools import (check_repo, commit,
                                 reset_to_last_commit,
@@ -50,15 +52,21 @@ from attowiki.git_tools import (check_repo, commit,
 from attowiki.pdf import produce_pdf
 
 
+def check_user(user, password):
+    """check the auth for user and password."""
+    return ((user == attowiki.user or attowiki.user is None) and
+            (password == attowiki.password or attowiki.password is None))
+
+
 def view_meta_cheat_sheet():
-    """Display a cheat sheet of reST syntax
-    """
+    """Display a cheat sheet of reST syntax."""
     response.set_header('Content-Type', 'text/plain')
     return template('rst_cheat_sheet')
 
 
+@auth_basic(check_user)
 def view_meta_index():
-    """List all the available .rst files in the directory
+    """List all the available .rst files in the directory.
 
     view_meta_index is called by the 'meta' url : /__index__
     """
@@ -74,8 +82,9 @@ def view_meta_index():
                     is_repo=check_repo())
 
 
+@auth_basic(check_user)
 def view_meta_admonition(admonition_name, name=None):
-    """List all found admonition from all the rst files found in directory
+    """List all found admonition from all the rst files found in directory.
 
     view_meta_admonition is called by the 'meta' url: /__XXXXXXX__
     where XXXXXXX represents and admonition name, like:
@@ -175,7 +184,7 @@ def view_meta_admonition(admonition_name, name=None):
                 paragraph.append(file_target)
                 paragraph.append(nodes.Text(":"))
                 doc2_pub.reader.document.append(paragraph)
-                #doc2_pub.reader.document.append(file_target)
+                # doc2_pub.reader.document.append(file_target)
 
             doc2_pub.reader.document.append(node)
         doc2_pub.apply_transforms()
@@ -198,9 +207,11 @@ def view_meta_admonition(admonition_name, name=None):
                     content=doc2_pub.writer.parts['html_body'])
 
 
+@auth_basic(check_user)
 def view_cancel_edit(name=None):
-    """cancel the edition of an existing page and render the last modification
-    status
+    """Cancel the edition of an existing page.
+
+    Then render the last modification status
 
     .. note:: this is a bottle view
 
@@ -224,8 +235,9 @@ def view_cancel_edit(name=None):
             return abort(404)
 
 
+@auth_basic(check_user)
 def view_edit(name=None):
-    """edit or creates a new page
+    """Edit or creates a new page.
 
     .. note:: this is a bottle view
 
@@ -267,8 +279,9 @@ def view_edit(name=None):
             return abort(404)
 
 
+@auth_basic(check_user)
 def view_pdf(name=None):
-    """render a pdf file based on the given page
+    """Render a pdf file based on the given page.
 
     .. note:: this is a bottle view
 
@@ -297,8 +310,9 @@ def view_pdf(name=None):
         return abort(404)
 
 
+@auth_basic(check_user)
 def view_page(name=None):
-    """serve a page name
+    """Serve a page name.
 
     .. note:: this is a bottle view
 
@@ -344,7 +358,6 @@ def view_page(name=None):
             return view_meta_index()
         else:
             name = index_files[0][2:-4]
-
     files = glob.glob("{0}.rst".format(name))
     if len(files) > 0:
         file_handle = open(files[0], 'r')
@@ -365,8 +378,9 @@ def view_page(name=None):
         return static_file(name, '')
 
 
+@auth_basic(check_user)
 def view_history(name, gitref):
-    """serve a page name from git repo (an old version of a page)
+    """Serve a page name from git repo (an old version of a page).
 
     .. note:: this is a bottle view
 
@@ -400,9 +414,11 @@ def view_history(name, gitref):
         return abort(404)
 
 
+@auth_basic(check_user)
 def view_history_source(name, gitref=None):
-    """serve a page name from git repo (an old version of a page)
-       and return the reST source code
+    """Serve a page name from git repo (an old version of a page).
+
+       then return the reST source code
 
        This function does not use any template it returns only plain text
 
@@ -442,9 +458,11 @@ def view_history_source(name, gitref=None):
         return abort(404)
 
 
+@auth_basic(check_user)
 def view_history_diff(name, gitref):
-    """serve a page name from git repo (an old version of a page)
-       and return the diff between current source and the old commited source
+    """Serve a page name from git repo (an old version of a page).
+
+       then return the diff between current source and the old commited source
 
        This function does not use any template it returns only plain text
 
@@ -486,8 +504,9 @@ def view_history_diff(name, gitref):
         return abort(404)
 
 
+@auth_basic(check_user)
 def view_quick_save_page(name=None):
-    """quick save a page
+    """Quick save a page.
 
     .. note:: this is a bottle view
 

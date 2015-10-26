@@ -31,6 +31,7 @@ from docutils.parsers.rst import directives
 from docutils import nodes, languages
 
 # project imports
+import attowiki
 from attowiki import views
 from attowiki.rst_directives import add_node
 from attowiki.rst_directives import todo, visit_todo, depart_todo, Todo
@@ -54,7 +55,7 @@ def main():
              html=(visit_todo, depart_todo),
              latex=(visit_todo, depart_todo),
              text=(visit_todo, depart_todo))
-    #nodes._add_node_class_names(['todo'])
+    # nodes._add_node_class_names(['todo'])
 
     # register the new directive todo
     directives.register_directive('todo', Todo)
@@ -66,7 +67,7 @@ def main():
              html=(visit_done, depart_done),
              latex=(visit_done, depart_done),
              text=(visit_done, depart_done))
-    #nodes._add_node_class_names(['todo'])
+    # nodes._add_node_class_names(['todo'])
 
     # register the new directive todo
     directives.register_directive('done', Done)
@@ -125,15 +126,20 @@ def main():
     bottle.debug(True)  # this line may be commented in production mode
 
     # run locally by default
-    from optparse import OptionParser
-    cmd_parser = OptionParser(usage="usage: %prog package.module:app")
-    cmd_options, cmd_args = cmd_parser.parse_args()
-    if len(cmd_args) >= 2:
-        host, port = (cmd_args[0] or 'localhost'), (cmd_args[1] or 8080)
-    elif len(cmd_args) == 1:
-        host, port = (cmd_args[0] or 'localhost'), (8080)
-    else:
-        host, port = ('localhost'), (8080)
-    if ':' in host:
-        host, port = host.rsplit(':', 1)
-    bottle.run(app, host=host, port=port)
+    import argparse
+    cmd_parser = argparse.ArgumentParser(
+        description="usage: %prog package.module:app")
+    cmd_parser.add_argument('-u', '--user', help='user name for auth',
+                            default=None)
+    cmd_parser.add_argument('-p', '--password', help='password for auth',
+                            default=None)
+    cmd_parser.add_argument('host', help='host to bind',
+                            default='localhost', nargs='?')
+    cmd_parser.add_argument('port', help='bind port',
+                            default='8080', nargs='?')
+    args = cmd_parser.parse_args()
+    attowiki.user = args.user
+    attowiki.password = args.password
+    if ':' in args.host:
+        args.host, args.port = args.host.rsplit(':', 1)
+    bottle.run(app, host=args.host, port=args.port)

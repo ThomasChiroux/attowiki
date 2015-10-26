@@ -17,8 +17,7 @@
 # along with this program.
 # If not, see <http://www.gnu.org/licenses/lgpl-3.0.html>
 #
-"""git tools functions used in the project
-"""
+"""git tools functions used in the project."""
 
 __authors__ = [
     # alphabetical order by last name
@@ -46,9 +45,9 @@ def _delta_dir():
     repo = Repo()
     current_dir = os.getcwd()
     repo_dir = repo.tree().abspath
-    delta_dir = current_dir.replace(repo_dir,'')
+    delta_dir = current_dir.replace(repo_dir, '')
     if delta_dir:
-        return delta_dir +'/'
+        return delta_dir + '/'
     else:
         return ''
 
@@ -84,13 +83,12 @@ def commit(filename):
     """
     try:
         repo = Repo()
-        #gitcmd = repo.git
-        #gitcmd.commit(filename)
+        # gitcmd = repo.git
+        # gitcmd.commit(filename)
         index = repo.index
         index.commit("Updated file: {0}".format(filename))
     except Exception as e:
-        print "exception while commit: %s" % e.message
-        #pass
+        print("exception while commit: %s" % e.message)
 
 
 def add_file_to_repo(filename):
@@ -111,7 +109,7 @@ def add_file_to_repo(filename):
         index = repo.index
         index.add([_delta_dir() + filename])
     except Exception as e:
-        print "exception while gitadding file: %s" % e.message
+        print("exception while gitadding file: %s" % e.message)
 
 
 def reset_to_last_commit():
@@ -136,7 +134,7 @@ def reset_to_last_commit():
 
 
 def commit_history(filename):
-    """retrieve the commit history for a give filename
+    """Retrieve the commit history for a given filename.
 
     Keyword Arguments:
         :filename: (str) -- full name of the file
@@ -148,14 +146,15 @@ def commit_history(filename):
     result = []
     repo = Repo()
     for commit in repo.head.commit.iter_parents(paths=_delta_dir() + filename):
-        result.append({'date' :
-                           datetime.fromtimestamp(commit.committed_date +
-                                                  commit.committer_tz_offset),
-                       'hexsha' : commit.hexsha})
+        result.append({'date':
+                       datetime.fromtimestamp(commit.committed_date +
+                                              commit.committer_tz_offset),
+                       'hexsha': commit.hexsha})
     return result
 
+
 def read_committed_file(gitref, filename):
-    """retrieves the content of a file in an old commit and returns it
+    """Retrieve the content of a file in an old commit and returns it.
 
     Ketword Arguments:
         :gitref: (str) -- full reference of the git commit
@@ -169,4 +168,3 @@ def read_committed_file(gitref, filename):
 
     blob = commitobj.tree[_delta_dir() + filename]
     return blob.data_stream.read()
-
